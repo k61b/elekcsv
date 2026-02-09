@@ -1,6 +1,6 @@
 {
 	"name": "@elekcsv/react",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "React hooks and UI components for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
@@ -14,7 +14,14 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": ["csv", "import", "react", "hooks", "headless", "typescript"],
+	"keywords": [
+		"csv",
+		"import",
+		"react",
+		"hooks",
+		"headless",
+		"typescript"
+	],
 	"engines": {
 		"node": ">=18"
 	},
@@ -34,7 +41,11 @@
 			}
 		}
 	},
-	"files": ["dist", "README.md", "LICENSE"],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
@@ -42,7 +53,11 @@
 		"test:watch": "bun test --watch"
 	},
 	"dependencies": {
-		"@elekcsv/core": "workspace:*"
+		"@elekcsv/core": "^0.2.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org"
 	},
 	"peerDependencies": {
 		"react": ">=18",
