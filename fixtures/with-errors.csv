@@ -1,0 +1,6 @@
+name,email,age,status
+Ömer,,28,active
+Şebnem,sebnem@test.com,-5,inactive
+Ali,ali@example.com,22,unknown
+Ayşe,ayse@test.com,41,pending
+Mehmet,omer@test.com,nineteen,active

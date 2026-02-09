@@ -1,0 +1,482 @@
+# elek
+
+High-performance, headless, locale-aware CSV import toolkit. Parses, validates, and maps CSV data with compiled validators and bitmap error tracking. Two packages: `@elekcsv/core` (engine) and `@elekcsv/react` (headless hook). 417 tests passing.
+
+## Architecture
+
+```
+CSV String → parse() → string[][] → mapColumns() → MappingResult
+                                         ↓
+                                  applyMapping()
+                                         ↓
+                      mapped string[][] → validate() → ValidationResult
+```
+
+Packages:
+- `@elekcsv/core` — Parser, validator, mapper, locale support
+- `@elekcsv/react` — State machine hook for React applications
+
+## @elekcsv/core Exports
+
+### Parser
+- `parse(csv, options?)` — Parse CSV string to rows/headers
+- `compileParser(sample, options?)` — Compile specialized parser
+- `clearParserCache()` — Clear parser cache
+
+### Validator
+- `validate(data, schema)` — Validate with eager error materialization
+- `validateBitmap(data, schema)` — Validate with bitmap tracking
+- `CompiledValidator` — Class for repeated validation
+- `compileSchema(schema)` — Compile schema to validator functions
+- `compileColumn(columnDef, name, options?)` — Compile single column
+- `ErrorBitmap` — Bit array for cell error tracking
+- `ErrorCodeMap` — Uint8Array for error codes
+
+### Mapper
+- `mapColumns(headers, schema, options?)` — Map CSV headers to schema
+- `applyMapping(data, mappings, schema, options?)` — Reorder columns
+- `updateMapping(mappings, csvIndex, schemaColumn)` — Manual mapping update
+- `mapAndValidate(data, schema, options?)` — Combined mapping + validation
+
+### Similarity (internal)
+- `levenshtein(a, b)` — Edit distance
+- `levenshteinSimilarity(a, b)` — Normalized 0-1 similarity
+- `normalize(str)` — Normalize for comparison
+- `tokenize(str)` — Split to tokens
+- `tokenSimilarity(a, b)` — Token-based similarity
+- `containsMatch(a, b)` — Substring check
+- `commonPrefixLength(a, b)` — Shared prefix
+- `computeSimilarity(csvHeader, target)` — Composite score
+- `computeBestMatch(header, columnName, aliases?)` — Best match
+
+### Locale
+- `registerLocale(config)` — Register custom locale
+- `getLocale(id)` — Get locale config
+- `hasLocale(id)` — Check if locale exists
+- `getLocaleIds()` — List all locales
+- `trLocale`, `enLocale`, `enGBLocale`, `deLocale`, `frLocale` — Built-in locales
+- `parseDate`, `validateDate`, `normalizeDateToISO` — Date functions
+- `parseNumber`, `validateNumber`, `normalizeNumber` — Number functions
+- `parseCurrency`, `validateCurrency`, `normalizeCurrency` — Currency functions
+- `parsePhone`, `validatePhone`, `normalizePhone` — Phone functions
+- `parseBoolean`, `validateBoolean`, `normalizeBoolean` — Boolean functions
+- `daysInMonth(month, year)`, `isLeapYear(year)` — Date utilities
+
+## @elekcsv/react Exports
+
+### Hook
+- `useCSVImporter(options)` — Main hook
+
+### State Machine
+- `importerReducer` — Pure reducer function
+- `createInitialState()` — Initial state factory
+- `isValidTransition(from, to)` — Check valid transition
+- `canGoBack(step)` — Check if can go back
+- `canGoForward(step)` — Check if can proceed
+- `getBackSteps(step)` — Get available back steps
+
+## Type Definitions
+
+### Schema & Columns
+
+```typescript
+interface Schema {
+  columns: Record<string, ColumnDef>;
+  locale?: string;
+}
+
+interface ColumnDef {
+  type: ColumnType;
+  rules?: Rule[];
+  locale?: string;
+  aliases?: string[];
+}
+
+type ColumnType =
+  | "string"
+  | "number"
+  | "integer"
+  | "date"
+  | "boolean"
+  | "enum"
+  | "phone"
+  | "currency";
+
+type Rule =
+  | { rule: "required" }
+  | { rule: "email" }
+  | { rule: "unique" }
+  | { rule: "min"; value: number }
+  | { rule: "max"; value: number }
+  | { rule: "minLength"; value: number }
+  | { rule: "maxLength"; value: number }
+  | { rule: "pattern"; value: RegExp }
+  | { rule: "enum"; values: string[] }
+  | { rule: "custom"; fn: (value: string) => boolean; message?: string };
+```
+
+### Validation
+
+```typescript
+interface ValidationResult {
+  valid: boolean;
+  stats: ValidationStats;
+  errors: ValidationError[];
+  aborted: boolean;
+}
+
+interface ValidationStats {
+  totalRows: number;
+  validRows: number;
+  errorRows: number;
+  errorsByRule: Record<string, number>;
+  errorsByColumn: Record<string, number>;
+}
+
+interface ValidationError {
+  row: number;
+  col: number;
+  field: string;
+  value: string;
+  code: ErrorCode;
+  message?: string;
+}
+
+type ErrorCode = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+
+const ERROR_CODES = {
+  VALID: 0,
+  REQUIRED: 1,
+  TYPE: 2,
+  MIN: 3,
+  MAX: 4,
+  PATTERN: 5,
+  ENUM: 6,
+  UNIQUE: 7,
+  MIN_LENGTH: 8,
+  MAX_LENGTH: 9,
+  EMAIL: 10,
+  CUSTOM: 11,
+} as const;
+
+interface BitmapValidationResult {
+  valid: boolean;
+  bitmap: ErrorBitmap;
+  errorCodes: ErrorCodeMap;
+  errorCount: number;
+  rowCount: number;
+  colCount: number;
+  aborted: boolean;
+  getErrors(options?: { limit?: number; offset?: number }): ValidationError[];
+  getRowErrors(row: number): ValidationError[];
+  getCellError(row: number, col: number): ValidationError | null;
+  getErrorSummary(): Record<string, number>;
+  getColumnErrorSummary(): Record<string, number>;
+  getErrorRowCount(): number;
+  getMemoryUsage(): { bitmap: number; codes: number; total: number };
+}
+```
+
+### Mapping
+
+```typescript
+interface MappingResult {
+  mappings: MappingMatch[];
+  unmappedCsvColumns: number[];
+  unmappedSchemaColumns: string[];
+  autoMapped: number;
+  needsReview: number;
+  unmapped: number;
+}
+
+interface MappingMatch {
+  csvIndex: number;
+  csvHeader: string;
+  schemaColumn: string;
+  confidence: MappingConfidence;
+  score: number;
+}
+
+type MappingConfidence = "exact" | "alias" | "fuzzy" | "none";
+
+interface MappingOptions {
+  fuzzyThreshold?: number;      // Default: 0.6
+  autoAcceptThreshold?: number; // Default: 0.8
+}
+```
+
+### Locale
+
+```typescript
+interface LocaleConfig {
+  id: string;
+  dateFormats: string[];
+  thousandsSeparator: string;
+  decimalSeparator: string;
+  currencySymbols: string[];
+  currencyPosition: "prefix" | "suffix" | "both";
+  phoneCountryCode: string;
+  phonePatterns: RegExp[];
+  phoneTotalDigits: number;
+  trueValues: string[];
+  falseValues: string[];
+}
+
+interface ParsedDate {
+  day: number;
+  month: number;
+  year: number;
+}
+
+type LocaleFieldType = "date" | "number" | "currency" | "phone" | "boolean";
+```
+
+### React Hook
+
+```typescript
+interface UseCSVImporterOptions {
+  schema: Schema;
+  autoMap?: boolean;           // Default: true
+  autoMapThreshold?: number;   // Default: 0.8
+  maxPreviewRows?: number;     // Default: 10
+  maxRows?: number;
+  locale?: string;
+  onComplete?: (result: ImportResult) => void;
+  onError?: (error: string) => void;
+  onStepChange?: (step: ImporterStep) => void;
+  delimiter?: string;          // Default: ","
+  quote?: string;              // Default: '"'
+}
+
+interface UseCSVImporterReturn {
+  state: ImporterState;
+  step: ImporterStep;
+  isLoading: boolean;
+  isComplete: boolean;
+  hasErrors: boolean;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  loadFile: (file: File) => void;
+  loadString: (content: string, fileName?: string) => void;
+  updateMapping: (csvIndex: number, schemaColumn: string | null) => void;
+  confirmMapping: () => void;
+  accept: () => void;
+  reset: () => void;
+  goBack: () => void;
+  getErrors: (options?: { limit?: number; offset?: number }) => ValidationError[];
+  getRowErrors: (row: number) => ValidationError[];
+  getCellError: (row: number, col: number) => ValidationError | null;
+  getErrorSummary: () => Record<string, number>;
+}
+
+type ImporterStep =
+  | "idle"
+  | "parsing"
+  | "mapping"
+  | "validating"
+  | "review"
+  | "complete"
+  | "error";
+
+interface ImporterState {
+  step: ImporterStep;
+  rawData: string[][] | null;
+  headers: string[] | null;
+  preview: string[][] | null;
+  rowCount: number;
+  mapping: MappingResult | null;
+  mappedData: string[][] | null;
+  validation: ValidationResult | null;
+  bitmapValidation: BitmapValidationResult | null;
+  file: File | null;
+  fileName: string | null;
+  fileSize: number | null;
+  parseTime: number | null;
+  validationTime: number | null;
+  progress: number;
+  error: string | null;
+}
+
+interface ImportResult {
+  data: string[][];
+  headers: string[];
+  mapping: MappingResult;
+  validation: ValidationResult | BitmapValidationResult;
+  stats: ImportStats;
+}
+
+interface ImportStats {
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  errorCount: number;
+  parseTime: number;
+  validationTime: number;
+}
+
+type ImporterAction =
+  | { type: "LOAD_FILE"; file: File }
+  | { type: "LOAD_STRING"; content: string; fileName?: string }
+  | { type: "PARSE_START" }
+  | { type: "PARSE_COMPLETE"; data: string[][]; headers: string[]; time: number }
+  | { type: "PARSE_ERROR"; error: string }
+  | { type: "SET_MAPPING"; mapping: MappingResult }
+  | { type: "UPDATE_MAPPING"; csvIndex: number; schemaColumn: string | null }
+  | { type: "CONFIRM_MAPPING"; mappedData: string[][] }
+  | { type: "SKIP_MAPPING"; mapping: MappingResult; mappedData: string[][] }
+  | { type: "VALIDATE_COMPLETE"; result: ValidationResult | BitmapValidationResult; time: number; isBitmap: boolean }
+  | { type: "VALIDATE_ERROR"; error: string }
+  | { type: "ACCEPT" }
+  | { type: "RESET" }
+  | { type: "GO_BACK" }
+  | { type: "SET_PROGRESS"; progress: number };
+```
+
+### Parse
+
+```typescript
+interface ParseOptions {
+  delimiter?: string;      // Default: ","
+  quote?: string;          // Default: '"'
+  header?: boolean;        // Default: true
+  skipEmptyLines?: boolean; // Default: false
+}
+
+interface ParseResult {
+  headers: string[] | null;
+  rows: string[][];
+  rowCount: number;
+  fieldCount: number;
+}
+
+interface CompiledParser {
+  fn: (input: string, startPos: number) => string[][];
+  fieldCount: number;
+  hasQuotes: boolean;
+  lineEnding: string;
+}
+```
+
+## Repo Structure
+
+```
+packages/
+  core/
+    src/
+      index.ts              # All exports
+      types.ts              # Schema, Rule, ValidationError, etc.
+      parser/
+        index.ts            # Re-exports
+        codegen.ts          # Compiled parser generator
+      validator/
+        index.ts            # Re-exports
+        validator.ts        # validate(), validateBitmap(), CompiledValidator
+        compiler.ts         # compileSchema(), compileColumn()
+        bitmap.ts           # ErrorBitmap, ErrorCodeMap classes
+        rules.ts            # Rule code generation
+      mapper/
+        index.ts            # Re-exports
+        mapper.ts           # mapColumns(), applyMapping(), updateMapping()
+        similarity.ts       # Levenshtein, normalize, tokenize
+        types.ts            # MappingResult, MappingMatch
+      locale/
+        index.ts            # Re-exports
+        registry.ts         # registerLocale(), getLocale(), built-in locales
+        parsers.ts          # parseDate, parseNumber, etc.
+        codegen.ts          # Locale-aware validation code generation
+        types.ts            # LocaleConfig, ParsedDate
+  react/
+    src/
+      index.ts              # All exports
+      types.ts              # ImporterStep, ImporterState, UseCSVImporterOptions
+      useCSVImporter.ts     # Main hook implementation
+      state-machine.ts      # importerReducer, createInitialState
+benchmarks/
+  parse-comparison.ts       # Parser benchmarks
+  validation-benchmark.ts   # Validation benchmarks
+  mapping-benchmark.ts      # Column mapping benchmarks
+fixtures/                   # Test CSV files
+```
+
+## Performance
+
+100K rows x 8 columns:
+
+| Operation | Time | Throughput |
+|-----------|------|------------|
+| Parse | ~37ms | 2.7M rows/sec |
+| Validate (compiled) | ~30ms | 3.3M rows/sec |
+| Validate (locale) | ~72ms | 1.4M rows/sec |
+| Full pipeline | ~76ms | 1.3M rows/sec |
+
+Bitmap memory: 100K rows x 8 cols = ~100KB bitmap + ~800KB codes
+
+## Common Tasks
+
+### Add a new validation rule
+
+1. Add rule type to `Rule` union in `packages/core/src/types.ts`
+2. Add error code to `ERROR_CODES` in same file
+3. Add code generation in `packages/core/src/validator/rules.ts`:
+   - `genRuleCode()` switch case
+   - `getRuleMeta()` switch case
+4. Add tests in `packages/core/src/validator/validator.test.ts`
+
+### Add a new locale
+
+1. Create locale config in `packages/core/src/locale/registry.ts`:
+   ```typescript
+   const xxLocale: LocaleConfig = {
+     id: "xx",
+     dateFormats: [...],
+     // ... all fields
+   };
+   ```
+2. Register in the registry Map
+3. Export from `packages/core/src/locale/index.ts`
+4. Add tests in `packages/core/src/locale/locale.test.ts`
+
+### Add a new column type
+
+1. Add type to `ColumnType` union in `packages/core/src/types.ts`
+2. Add type check in `packages/core/src/validator/rules.ts`:
+   - `genTypeCheck()` function
+   - `isLocaleAwareType()` if locale-aware
+3. Add locale code generation if needed in `packages/core/src/locale/codegen.ts`
+4. Add tests
+
+### Run tests
+
+```bash
+bun test                    # Run all tests
+bun test --watch            # Watch mode
+bun test packages/core      # Core only
+bun test packages/react     # React only
+```
+
+### Run benchmarks
+
+```bash
+bun run bench               # Parse benchmark
+bun run benchmarks/validation-benchmark.ts  # Validation benchmark
+bun run bench:mapping       # Mapping benchmark
+```
+
+### Build
+
+```bash
+bun run build               # Build all packages
+bun run --cwd packages/core build   # Build core only
+```
+
+## Conventions
+
+- **Tooling**: bun (runtime + package manager), tsup (build), biome (lint + format)
+- **Test runner**: bun:test
+- **Naming**: camelCase for functions/variables, PascalCase for types/classes
+- **Exports**: All public API through index.ts, internal modules not exported
+- **Types**: Explicit types for all public APIs, type-only imports where possible
+- **Errors**: Error codes are numeric (0-255), messages are human-readable strings
+- **Data format**: CSV data is always `string[][]` (rows of string arrays)
+- **No mutations**: All functions return new objects, never mutate inputs
+- **Locale default**: Falls back to "en" locale if not specified

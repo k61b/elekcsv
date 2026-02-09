@@ -1,0 +1,59 @@
+{
+	"name": "@elekcsv/react",
+	"version": "0.0.1",
+	"description": "React hooks and UI components for elek CSV import",
+	"type": "module",
+	"license": "Apache-2.0",
+	"author": "Kayra Berk Tuncer",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/k61b/elekcsv.git",
+		"directory": "packages/react"
+	},
+	"homepage": "https://github.com/k61b/elekcsv",
+	"bugs": {
+		"url": "https://github.com/k61b/elekcsv/issues"
+	},
+	"keywords": ["csv", "import", "react", "hooks", "headless", "typescript"],
+	"engines": {
+		"node": ">=18"
+	},
+	"sideEffects": false,
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
+		}
+	},
+	"files": ["dist", "README.md", "LICENSE"],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"test": "bun test",
+		"test:watch": "bun test --watch"
+	},
+	"dependencies": {
+		"@elekcsv/core": "workspace:*"
+	},
+	"peerDependencies": {
+		"react": ">=18",
+		"react-dom": ">=18"
+	},
+	"devDependencies": {
+		"@types/react": "^18.3.12",
+		"@types/react-dom": "^18.3.1",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
+		"tsup": "^8.3.5",
+		"typescript": "^5.7.2"
+	}
+}
