@@ -14,14 +14,7 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": [
-		"csv",
-		"parser",
-		"validator",
-		"transform",
-		"locale",
-		"typescript"
-	],
+	"keywords": ["csv", "parser", "validator", "transform", "locale", "typescript"],
 	"engines": {
 		"node": ">=18"
 	},
@@ -41,11 +34,7 @@
 			}
 		}
 	},
-	"files": [
-		"dist",
-		"README.md",
-		"LICENSE"
-	],
+	"files": ["dist", "README.md", "LICENSE"],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
