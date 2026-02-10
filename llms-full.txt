@@ -1,0 +1,672 @@
+# elek - Complete API Reference
+
+High-performance, headless, locale-aware CSV import toolkit for JavaScript/TypeScript.
+Two packages: @elekcsv/core (engine) and @elekcsv/react (headless hook).
+
+================================================================================
+INSTALLATION
+================================================================================
+
+npm install @elekcsv/core
+npm install @elekcsv/react  # For React applications
+
+================================================================================
+@elekcsv/core EXPORTS
+================================================================================
+
+// Parser
+export { parse, compileParser, clearParserCache } from "@elekcsv/core";
+
+// Validator
+export {
+  validate,
+  validateBitmap,
+  CompiledValidator,
+  compileSchema,
+  compileColumn,
+  ErrorBitmap,
+  ErrorCodeMap,
+} from "@elekcsv/core";
+
+// Mapper
+export {
+  mapColumns,
+  applyMapping,
+  mapAndValidate,
+  updateMapping,
+  levenshtein,
+  levenshteinSimilarity,
+  normalize,
+  tokenize,
+  tokenSimilarity,
+  containsMatch,
+  commonPrefixLength,
+  computeSimilarity,
+  computeBestMatch,
+} from "@elekcsv/core";
+
+// Locale
+export {
+  getLocale,
+  hasLocale,
+  registerLocale,
+  getLocaleIds,
+  trLocale,
+  enLocale,
+  enGBLocale,
+  deLocale,
+  frLocale,
+  parseDate,
+  validateDate,
+  normalizeDateToISO,
+  parseNumber,
+  validateNumber,
+  normalizeNumber,
+  parseCurrency,
+  validateCurrency,
+  normalizeCurrency,
+  parsePhone,
+  validatePhone,
+  normalizePhone,
+  parseBoolean,
+  validateBoolean,
+  normalizeBoolean,
+  daysInMonth,
+  isLeapYear,
+} from "@elekcsv/core";
+
+// Types
+export type {
+  Schema,
+  ColumnDef,
+  ColumnType,
+  Rule,
+  ParseOptions,
+  ParseResult,
+  CompiledParser,
+  ValidationResult,
+  ValidationStats,
+  ValidationError,
+  ErrorCode,
+  BitmapValidationResult,
+  CompiledSchemaValidator,
+  ColumnValidatorInfo,
+  CompiledColumnValidator,
+  MappingResult,
+  MappingMatch,
+  MappingConfidence,
+  MappingOptions,
+  ScoringResult,
+  LocaleConfig,
+  ParsedDate,
+  LocaleFieldType,
+} from "@elekcsv/core";
+
+================================================================================
+@elekcsv/react EXPORTS
+================================================================================
+
+export { useCSVImporter } from "@elekcsv/react";
+
+export {
+  importerReducer,
+  createInitialState,
+  isValidTransition,
+  canGoBack,
+  canGoForward,
+  getBackSteps,
+} from "@elekcsv/react";
+
+export type {
+  ImporterStep,
+  ImporterState,
+  ImporterAction,
+  UseCSVImporterOptions,
+  UseCSVImporterReturn,
+  ImportResult,
+  ImportStats,
+} from "@elekcsv/react";
+
+================================================================================
+COMPLETE TYPE DEFINITIONS
+================================================================================
+
+// ============================================================================
+// Schema & Column Types
+// ============================================================================
+
+interface Schema {
+  columns: Record<string, ColumnDef>;
+  locale?: string;  // Default locale for all columns
+}
+
+interface ColumnDef {
+  type: ColumnType;
+  rules?: Rule[];
+  locale?: string;    // Override schema locale for this column
+  aliases?: string[]; // Alternative names for column mapping
+}
+
+type ColumnType =
+  | "string"
+  | "number"
+  | "integer"
+  | "date"
+  | "boolean"
+  | "enum"
+  | "phone"
+  | "currency";
+
+type Rule =
+  | { rule: "required" }
+  | { rule: "email" }
+  | { rule: "unique" }
+  | { rule: "min"; value: number }
+  | { rule: "max"; value: number }
+  | { rule: "minLength"; value: number }
+  | { rule: "maxLength"; value: number }
+  | { rule: "pattern"; value: RegExp }
+  | { rule: "enum"; values: string[] }
+  | { rule: "custom"; fn: (value: string) => boolean; message?: string };
+
+// ============================================================================
+// Error Codes
+// ============================================================================
+
+const ERROR_CODES = {
+  VALID: 0,
+  REQUIRED: 1,
+  TYPE: 2,
+  MIN: 3,
+  MAX: 4,
+  PATTERN: 5,
+  ENUM: 6,
+  UNIQUE: 7,
+  MIN_LENGTH: 8,
+  MAX_LENGTH: 9,
+  EMAIL: 10,
+  CUSTOM: 11,
+} as const;
+
+type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
+// ============================================================================
+// Parse Types
+// ============================================================================
+
+interface ParseOptions {
+  delimiter?: string;       // Default: ","
+  quote?: string;           // Default: '"'
+  header?: boolean;         // Default: true
+  skipEmptyLines?: boolean; // Default: false
+}
+
+interface ParseResult {
+  headers: string[] | null;  // Header row (null if header: false)
+  rows: string[][];          // Data rows as string arrays
+  rowCount: number;          // Total data rows (excluding header)
+  fieldCount: number;        // Number of fields per row
+}
+
+interface CompiledParser {
+  fn: (input: string, startPos: number) => string[][];
+  fieldCount: number;
+  hasQuotes: boolean;
+  lineEnding: string;
+}
+
+// ============================================================================
+// Validation Types
+// ============================================================================
+
+interface ValidationResult {
+  valid: boolean;
+  stats: ValidationStats;
+  errors: ValidationError[];
+  aborted: boolean;
+}
+
+interface ValidationStats {
+  totalRows: number;
+  validRows: number;
+  errorRows: number;
+  errorsByRule: Record<string, number>;
+  errorsByColumn: Record<string, number>;
+}
+
+interface ValidationError {
+  row: number;       // 0-indexed row number
+  col: number;       // 0-indexed column number
+  field: string;     // Column name from schema
+  value: string;     // The invalid value
+  code: ErrorCode;   // Numeric error code
+  message?: string;  // Human-readable error message
+}
+
+interface BitmapValidationResult {
+  valid: boolean;
+  bitmap: ErrorBitmap;
+  errorCodes: ErrorCodeMap;
+  errorCount: number;
+  rowCount: number;
+  colCount: number;
+  aborted: boolean;
+
+  getErrors(options?: { limit?: number; offset?: number }): ValidationError[];
+  getRowErrors(row: number): ValidationError[];
+  getCellError(row: number, col: number): ValidationError | null;
+  getErrorSummary(): Record<string, number>;
+  getColumnErrorSummary(): Record<string, number>;
+  getErrorRowCount(): number;
+  getMemoryUsage(): { bitmap: number; codes: number; total: number };
+}
+
+interface CompiledSchemaValidator {
+  columns: ColumnValidatorInfo[];
+  columnNames: string[];
+  columnCount: number;
+  locale?: string;
+}
+
+interface ColumnValidatorInfo {
+  fn: CompiledColumnValidator;
+  errorMap: Map<number, RuleMeta>;
+  hasRequired: boolean;
+  hasUnique: boolean;
+  customFns: Array<{ fn: (value: string) => boolean; message?: string; code: number }>;
+  locale?: string;
+}
+
+type CompiledColumnValidator = (value: string) => number;
+
+// ============================================================================
+// Mapping Types
+// ============================================================================
+
+interface MappingResult {
+  mappings: MappingMatch[];
+  unmappedCsvColumns: number[];
+  unmappedSchemaColumns: string[];
+  autoMapped: number;
+  needsReview: number;
+  unmapped: number;
+}
+
+interface MappingMatch {
+  csvIndex: number;
+  csvHeader: string;
+  schemaColumn: string;
+  confidence: MappingConfidence;
+  score: number;
+}
+
+type MappingConfidence = "exact" | "alias" | "fuzzy" | "none";
+
+interface MappingOptions {
+  fuzzyThreshold?: number;      // Default: 0.6
+  autoAcceptThreshold?: number; // Default: 0.8
+}
+
+interface ScoringResult {
+  schemaColumn: string;
+  confidence: MappingConfidence;
+  score: number;
+  matchedVia?: string;
+}
+
+// ============================================================================
+// Locale Types
+// ============================================================================
+
+interface LocaleConfig {
+  id: string;
+  dateFormats: string[];
+  thousandsSeparator: string;
+  decimalSeparator: string;
+  currencySymbols: string[];
+  currencyPosition: "prefix" | "suffix" | "both";
+  phoneCountryCode: string;
+  phonePatterns: RegExp[];
+  phoneTotalDigits: number;
+  trueValues: string[];
+  falseValues: string[];
+}
+
+interface ParsedDate {
+  day: number;
+  month: number;
+  year: number;
+}
+
+interface DateFormatInfo {
+  format: string;
+  regex: RegExp;
+  dayIndex: number;
+  monthIndex: number;
+  yearIndex: number;
+}
+
+type LocaleFieldType = "date" | "number" | "currency" | "phone" | "boolean";
+
+// ============================================================================
+// React Hook Types
+// ============================================================================
+
+type ImporterStep =
+  | "idle"
+  | "parsing"
+  | "mapping"
+  | "validating"
+  | "review"
+  | "complete"
+  | "error";
+
+interface ImporterState {
+  step: ImporterStep;
+  rawData: string[][] | null;
+  headers: string[] | null;
+  preview: string[][] | null;
+  rowCount: number;
+  mapping: MappingResult | null;
+  mappedData: string[][] | null;
+  validation: ValidationResult | null;
+  bitmapValidation: BitmapValidationResult | null;
+  file: File | null;
+  fileName: string | null;
+  fileSize: number | null;
+  parseTime: number | null;
+  validationTime: number | null;
+  progress: number;
+  error: string | null;
+}
+
+interface UseCSVImporterOptions {
+  schema: Schema;
+  autoMap?: boolean;
+  autoMapThreshold?: number;
+  maxPreviewRows?: number;
+  maxRows?: number;
+  locale?: string;
+  onComplete?: (result: ImportResult) => void;
+  onError?: (error: string) => void;
+  onStepChange?: (step: ImporterStep) => void;
+  delimiter?: string;
+  quote?: string;
+}
+
+interface UseCSVImporterReturn {
+  state: ImporterState;
+  step: ImporterStep;
+  isLoading: boolean;
+  isComplete: boolean;
+  hasErrors: boolean;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  loadFile: (file: File) => void;
+  loadString: (content: string, fileName?: string) => void;
+  updateMapping: (csvIndex: number, schemaColumn: string | null) => void;
+  confirmMapping: () => void;
+  accept: () => void;
+  reset: () => void;
+  goBack: () => void;
+  getErrors: (options?: { limit?: number; offset?: number }) => ValidationError[];
+  getRowErrors: (row: number) => ValidationError[];
+  getCellError: (row: number, col: number) => ValidationError | null;
+  getErrorSummary: () => Record<string, number>;
+}
+
+interface ImportResult {
+  data: string[][];
+  headers: string[];
+  mapping: MappingResult;
+  validation: ValidationResult | BitmapValidationResult;
+  stats: ImportStats;
+}
+
+interface ImportStats {
+  totalRows: number;
+  validRows: number;
+  invalidRows: number;
+  errorCount: number;
+  parseTime: number;
+  validationTime: number;
+}
+
+type ImporterAction =
+  | { type: "LOAD_FILE"; file: File }
+  | { type: "LOAD_STRING"; content: string; fileName?: string }
+  | { type: "PARSE_START" }
+  | { type: "PARSE_COMPLETE"; data: string[][]; headers: string[]; time: number }
+  | { type: "PARSE_ERROR"; error: string }
+  | { type: "SET_MAPPING"; mapping: MappingResult }
+  | { type: "UPDATE_MAPPING"; csvIndex: number; schemaColumn: string | null }
+  | { type: "CONFIRM_MAPPING"; mappedData: string[][] }
+  | { type: "SKIP_MAPPING"; mapping: MappingResult; mappedData: string[][] }
+  | { type: "VALIDATE_COMPLETE"; result: ValidationResult | BitmapValidationResult; time: number; isBitmap: boolean }
+  | { type: "VALIDATE_ERROR"; error: string }
+  | { type: "ACCEPT" }
+  | { type: "RESET" }
+  | { type: "GO_BACK" }
+  | { type: "SET_PROGRESS"; progress: number };
+
+================================================================================
+FUNCTION SIGNATURES
+================================================================================
+
+// Parser
+function parse(csv: string, options?: ParseOptions): ParseResult;
+function compileParser(sample: string, options?: ParseOptions): CompiledParser;
+function clearParserCache(): void;
+
+// Validator
+function validate(data: string[][], schema: Schema): ValidationResult;
+function validateBitmap(data: string[][], schema: Schema): BitmapValidationResult;
+function compileSchema(schema: Schema): CompiledSchemaValidator;
+function compileColumn(columnDef: ColumnDef, columnName: string, options?: { defaultLocale?: string }): ColumnValidatorInfo;
+
+// CompiledValidator class
+class CompiledValidator {
+  constructor(schema: Schema);
+  validateAll(data: string[][]): ValidationResult;
+  validateAllBitmap(data: string[][]): BitmapValidationResult;
+  getColumnNames(): string[];
+  getColumnCount(): number;
+}
+
+// ErrorBitmap class
+class ErrorBitmap {
+  constructor(rows: number, cols: number);
+  setError(row: number, col: number): void;
+  hasError(row: number, col: number): boolean;
+  hasRowError(row: number): boolean;
+  countErrors(): number;
+  countErrorRows(): number;
+  getColumnErrors(col: number): number[];
+  getRowErrorColumns(row: number): number[];
+  forEachError(callback: (row: number, col: number) => void): void;
+  get byteSize(): number;
+  clear(): void;
+}
+
+// ErrorCodeMap class
+class ErrorCodeMap {
+  constructor(rows: number, cols: number);
+  setCode(row: number, col: number, code: number): void;
+  getCode(row: number, col: number): number;
+  get byteSize(): number;
+  clear(): void;
+}
+
+// Mapper
+function mapColumns(csvHeaders: string[], schema: Schema, options?: MappingOptions): MappingResult;
+function applyMapping(data: string[][], mappings: MappingMatch[], schema: Schema, options?: { hasHeader?: boolean }): string[][];
+function updateMapping(mappings: MappingMatch[], csvIndex: number, schemaColumn: string): MappingMatch[];
+function mapAndValidate(data: string[][], schema: Schema, options?: MappingOptions): { mapping: MappingResult; validation: ValidationResult; mappedData: string[][] };
+
+// Similarity
+function levenshtein(a: string, b: string): number;
+function levenshteinSimilarity(a: string, b: string): number;
+function normalize(str: string): string;
+function tokenize(str: string): string[];
+function tokenSimilarity(a: string, b: string): number;
+function containsMatch(a: string, b: string): boolean;
+function commonPrefixLength(a: string, b: string): number;
+function computeSimilarity(csvHeader: string, target: string): number;
+function computeBestMatch(csvHeader: string, columnName: string, aliases?: string[]): { score: number; matchedVia: string; isAlias: boolean };
+
+// Locale
+function registerLocale(config: LocaleConfig): void;
+function getLocale(localeId: string): LocaleConfig;
+function hasLocale(localeId: string): boolean;
+function getLocaleIds(): string[];
+function parseDate(value: string, localeId: string): ParsedDate | null;
+function validateDate(value: string, localeId: string): number;
+function normalizeDateToISO(value: string, localeId: string): string | null;
+function parseNumber(value: string, localeId: string): number;
+function validateNumber(value: string, localeId: string): number;
+function normalizeNumber(value: string, localeId: string): string | null;
+function parseCurrency(value: string, localeId: string): number;
+function validateCurrency(value: string, localeId: string): number;
+function normalizeCurrency(value: string, localeId: string): string | null;
+function parsePhone(value: string, localeId: string): string;
+function validatePhone(value: string, localeId: string): number;
+function normalizePhone(value: string, localeId: string): string | null;
+function parseBoolean(value: string, localeId: string): boolean | null;
+function validateBoolean(value: string, localeId: string): number;
+function normalizeBoolean(value: string, localeId: string): string | null;
+function daysInMonth(month: number, year: number): number;
+function isLeapYear(year: number): boolean;
+
+// React
+function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterReturn;
+function importerReducer(state: ImporterState, action: ImporterAction): ImporterState;
+function createInitialState(): ImporterState;
+function isValidTransition(from: ImporterStep, to: ImporterStep): boolean;
+function canGoBack(step: ImporterStep): boolean;
+function canGoForward(step: ImporterStep): boolean;
+function getBackSteps(step: ImporterStep): ImporterStep[];
+
+================================================================================
+BUILT-IN LOCALES
+================================================================================
+
+// Turkish (tr)
+{
+  id: "tr",
+  dateFormats: ["DD.MM.YYYY", "DD/MM/YYYY"],
+  thousandsSeparator: ".",
+  decimalSeparator: ",",
+  currencySymbols: ["₺", "TL", "TRY"],
+  currencyPosition: "both",
+  phoneCountryCode: "+90",
+  phoneTotalDigits: 12,
+  trueValues: ["evet", "dogru", "e", "1", "true", "yes"],
+  falseValues: ["hayir", "yanlis", "h", "0", "false", "no"],
+}
+
+// English US (en)
+{
+  id: "en",
+  dateFormats: ["MM/DD/YYYY", "YYYY-MM-DD"],
+  thousandsSeparator: ",",
+  decimalSeparator: ".",
+  currencySymbols: ["$", "USD"],
+  currencyPosition: "prefix",
+  phoneCountryCode: "+1",
+  phoneTotalDigits: 11,
+  trueValues: ["true", "yes", "y", "1"],
+  falseValues: ["false", "no", "n", "0"],
+}
+
+// English UK (en-GB)
+{
+  id: "en-GB",
+  dateFormats: ["DD/MM/YYYY", "YYYY-MM-DD"],
+  thousandsSeparator: ",",
+  decimalSeparator: ".",
+  currencySymbols: ["£", "GBP"],
+  currencyPosition: "prefix",
+  phoneCountryCode: "+44",
+  phoneTotalDigits: 12,
+  trueValues: ["true", "yes", "y", "1"],
+  falseValues: ["false", "no", "n", "0"],
+}
+
+// German (de)
+{
+  id: "de",
+  dateFormats: ["DD.MM.YYYY", "YYYY-MM-DD"],
+  thousandsSeparator: ".",
+  decimalSeparator: ",",
+  currencySymbols: ["€", "EUR"],
+  currencyPosition: "both",
+  phoneCountryCode: "+49",
+  phoneTotalDigits: 13,
+  trueValues: ["ja", "wahr", "j", "1", "true", "yes"],
+  falseValues: ["nein", "falsch", "n", "0", "false", "no"],
+}
+
+// French (fr)
+{
+  id: "fr",
+  dateFormats: ["DD/MM/YYYY", "YYYY-MM-DD"],
+  thousandsSeparator: " ",
+  decimalSeparator: ",",
+  currencySymbols: ["€", "EUR"],
+  currencyPosition: "suffix",
+  phoneCountryCode: "+33",
+  phoneTotalDigits: 11,
+  trueValues: ["oui", "vrai", "o", "1", "true", "yes"],
+  falseValues: ["non", "faux", "n", "0", "false", "no"],
+}
+
+================================================================================
+USAGE EXAMPLES
+================================================================================
+
+// Basic parsing and validation
+import { parse, validate } from "@elekcsv/core";
+
+const csv = `name,email,age
+Omer,omer@test.com,25`;
+
+const { headers, rows } = parse(csv, { header: true });
+const result = validate(rows, {
+  columns: {
+    name: { type: "string", rules: [{ rule: "required" }] },
+    email: { type: "string", rules: [{ rule: "email" }] },
+    age: { type: "integer" },
+  },
+});
+
+// Column mapping with Turkish aliases
+import { mapColumns, applyMapping } from "@elekcsv/core";
+
+const mapping = mapColumns(headers, {
+  columns: {
+    name: { type: "string", aliases: ["ad", "isim"] },
+    email: { type: "string", aliases: ["e-posta"] },
+  },
+});
+const mappedData = applyMapping([headers, ...rows], mapping.mappings, schema);
+
+// React hook
+import { useCSVImporter } from "@elekcsv/react";
+
+const { step, loadFile, confirmMapping, accept } = useCSVImporter({
+  schema,
+  onComplete: (result) => console.log(result.data),
+});
+
+================================================================================
+PERFORMANCE
+================================================================================
+
+100K rows x 8 columns:
+- Parse: ~37ms (2.7M rows/sec)
+- Validate (compiled): ~30ms (3.3M rows/sec)
+- Validate (locale): ~72ms (1.4M rows/sec)
+- Full pipeline: ~76ms (1.3M rows/sec)
+
+Bitmap memory: rows * cols * 1.125 bytes
+- 100K x 8 = ~900KB

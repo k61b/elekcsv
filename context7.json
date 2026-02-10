@@ -1,0 +1,22 @@
+{
+	"$schema": "https://context7.com/schema/context7.json",
+	"projectTitle": "elek - CSV Import Toolkit",
+	"description": "High-performance, headless, locale-aware CSV import toolkit for JavaScript/TypeScript. Parse, validate, map columns with fuzzy matching, locale-aware date/number/currency processing, compiled validators, and bitmap error tracking. Includes a headless React hook.",
+	"folders": ["docs"],
+	"excludeFolders": ["node_modules", "dist", ".turbo", "coverage", ".changeset", "benchmarks"],
+	"excludeFiles": ["CHANGELOG.md", "LICENSE", "PARSER_ANALYSIS.md", "OPTIMIZATION_PLAN.md"],
+	"rules": [
+		"Always import from '@elekcsv/core' for parse/validate/map functions",
+		"Always import from '@elekcsv/react' for the useCSVImporter hook",
+		"Use parse() for CSV parsing - it returns { headers, rows, rowCount, fieldCount }",
+		"Define a schema with columns: Record<string, ColumnDef> before validation",
+		"Use mapColumns() for automatic header-to-schema matching with fuzzy support",
+		"Use validate() for standard validation or validateBitmap() for large datasets (10K+ rows)",
+		"For locale-aware validation, set locale in schema: { locale: 'tr', columns: {...} }",
+		"Available locales: tr, en, en-GB, de, fr - use registerLocale() for custom ones",
+		"Pipeline shortcut: mapAndValidate(data, schema) does mapping + validation in one call",
+		"elek is headless - it has no UI. @elekcsv/react provides hooks, you bring your own components",
+		"Column types: string, number, integer, date, boolean, enum, phone, currency",
+		"Rules: required, email, unique, min, max, minLength, maxLength, pattern, enum, custom"
+	]
+}

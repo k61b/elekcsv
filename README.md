@@ -1,6 +1,11 @@
 # elek
 
-High-performance, headless, locale-aware CSV import toolkit.
+High-performance, headless, locale-aware CSV import toolkit for JavaScript and TypeScript.
+
+[![npm version](https://img.shields.io/npm/v/@elekcsv/core.svg)](https://www.npmjs.com/package/@elekcsv/core)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+**elek** is a complete CSV import solution: parse, validate, and map CSV data with compiled validators, fuzzy column matching, and full locale support. Use it standalone or with the headless React hook.
 
 ## Why elek?
 
@@ -266,6 +271,38 @@ const updated = updateMapping(mapping.mappings, csvIndex, "schemaColumn");
 // Apply to data
 const reordered = applyMapping(data, mapping.mappings, schema);
 ```
+
+## Documentation
+
+- [Getting Started](./docs/getting-started.md)
+- [CSV Parsing](./docs/parsing.md)
+- [Validation](./docs/validation.md)
+- [Bitmap Validation (Large Files)](./docs/validation-bitmap.md)
+- [Compiled Validators](./docs/compiled-validation.md)
+- [Column Mapping](./docs/column-mapping.md)
+- [Locale Support](./docs/locale-support.md)
+- [React Hook](./docs/react-hook.md)
+- [Full Pipeline](./docs/pipeline.md)
+- [Performance](./docs/performance.md)
+- [Migration from PapaParse](./docs/migration-from-papaparse.md)
+- [Examples](./docs/examples.md)
+- [API Reference](./docs/API.md)
+
+## Comparison
+
+| Feature | elek | PapaParse | csv-parse |
+|---------|------|-----------|-----------|
+| CSV Parsing | Yes | Yes | Yes |
+| Schema Validation | Yes | No | No |
+| Column Mapping | Yes | No | No |
+| Fuzzy Matching | Yes | No | No |
+| Locale Support | Yes | No | No |
+| Turkish Dates | Yes | No | No |
+| European Numbers | Yes | No | No |
+| Bitmap Errors | Yes | No | No |
+| React Hook | Yes | No | No |
+| Headless | Yes | Yes | Yes |
+| TypeScript | Yes | Types | Yes |
 
 ## License
 
