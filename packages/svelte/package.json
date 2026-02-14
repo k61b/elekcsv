@@ -1,6 +1,6 @@
 {
 	"name": "@elekcsv/svelte",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Svelte stores for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
