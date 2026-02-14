@@ -1,14 +1,14 @@
 {
-	"name": "@elekcsv/react",
+	"name": "@elekcsv/vue",
 	"version": "1.0.0",
-	"description": "React hooks and UI components for elek CSV import",
+	"description": "Vue composables for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
 	"author": "Kayra Berk Tuncer",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/k61b/elekcsv.git",
-		"directory": "packages/react"
+		"directory": "packages/vue"
 	},
 	"homepage": "https://github.com/k61b/elekcsv",
 	"bugs": {
@@ -17,8 +17,8 @@
 	"keywords": [
 		"csv",
 		"import",
-		"react",
-		"hooks",
+		"vue",
+		"composables",
 		"headless",
 		"typescript"
 	],
@@ -60,14 +60,10 @@
 		"registry": "https://registry.npmjs.org"
 	},
 	"peerDependencies": {
-		"react": ">=18",
-		"react-dom": ">=18"
+		"vue": ">=3"
 	},
 	"devDependencies": {
-		"@types/react": "^18.3.12",
-		"@types/react-dom": "^18.3.1",
-		"react": "^18.3.1",
-		"react-dom": "^18.3.1",
+		"vue": "^3.5.13",
 		"tsup": "^8.3.5",
 		"typescript": "^5.7.2"
 	}
