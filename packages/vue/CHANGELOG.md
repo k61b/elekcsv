@@ -1,5 +1,11 @@
 # @elekcsv/vue
 
+## 2.0.0
+
+### Major Changes
+
+- 4af24d5: add readme files
+
 ## 1.0.0
 
 ### Major Changes

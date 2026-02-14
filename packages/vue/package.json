@@ -1,6 +1,6 @@
 {
 	"name": "@elekcsv/vue",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Vue composables for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
@@ -14,7 +14,14 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": ["csv", "import", "vue", "composables", "headless", "typescript"],
+	"keywords": [
+		"csv",
+		"import",
+		"vue",
+		"composables",
+		"headless",
+		"typescript"
+	],
 	"engines": {
 		"node": ">=18"
 	},
@@ -34,7 +41,11 @@
 			}
 		}
 	},
-	"files": ["dist", "README.md", "LICENSE"],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
