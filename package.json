@@ -19,8 +19,8 @@
 	},
 	"workspaces": ["packages/*"],
 	"scripts": {
-		"build": "bun run --cwd packages/core build && bun run --cwd packages/react build && bun run --cwd packages/svelte build && bun run --cwd packages/vue build",
-		"dev": "bun run --cwd packages/core dev & bun run --cwd packages/react dev & bun run --cwd packages/svelte dev & bun run --cwd packages/vue dev",
+		"build": "bun run --cwd packages/core build && bun run --cwd packages/react build && bun run --cwd packages/svelte build && bun run --cwd packages/vue build && bun run --cwd packages/solid build && bun run --cwd packages/preact build && bun run --cwd packages/angular build",
+		"dev": "bun run --cwd packages/core dev & bun run --cwd packages/react dev & bun run --cwd packages/svelte dev & bun run --cwd packages/vue dev & bun run --cwd packages/solid dev & bun run --cwd packages/preact dev & bun run --cwd packages/angular dev",
 		"test": "bun test",
 		"test:watch": "bun test --watch",
 		"check": "biome check .",
