@@ -1,6 +1,6 @@
 {
 	"name": "@elekcsv/svelte",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Svelte stores for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
@@ -14,7 +14,14 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": ["csv", "import", "svelte", "stores", "headless", "typescript"],
+	"keywords": [
+		"csv",
+		"import",
+		"svelte",
+		"stores",
+		"headless",
+		"typescript"
+	],
 	"engines": {
 		"node": ">=18"
 	},
@@ -34,7 +41,10 @@
 			}
 		}
 	},
-	"files": ["dist", "README.md"],
+	"files": [
+		"dist",
+		"README.md"
+	],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
@@ -42,7 +52,7 @@
 		"test:watch": "bun test --watch"
 	},
 	"dependencies": {
-		"@elekcsv/core": "^1.1.0"
+		"@elekcsv/core": "^1.1.1"
 	},
 	"publishConfig": {
 		"access": "public",

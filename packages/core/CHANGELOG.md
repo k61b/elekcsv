@@ -1,5 +1,12 @@
 # @elekcsv/core
 
+## 1.1.1
+
+### Patch Changes
+
+- Fix parser cache key handling, align adapter behaviors for preview and locale options,
+  stabilize worker validation responses, and clean up package release/build metadata.
+
 ## 1.1.0
 
 ### Minor Changes
