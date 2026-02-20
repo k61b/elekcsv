@@ -12,9 +12,9 @@
     },
     "packages/angular": {
       "name": "@elekcsv/angular",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "dependencies": {
-        "@elekcsv/core": "^0.2.0",
+        "@elekcsv/core": "^1.1.1",
       },
       "devDependencies": {
         "@angular/core": "^19.0.5",
@@ -27,7 +27,7 @@
     },
     "packages/core": {
       "name": "@elekcsv/core",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "devDependencies": {
         "tsup": "^8.3.5",
         "typescript": "^5.7.2",
@@ -35,9 +35,9 @@
     },
     "packages/preact": {
       "name": "@elekcsv/preact",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "dependencies": {
-        "@elekcsv/core": "^0.2.0",
+        "@elekcsv/core": "^1.1.1",
       },
       "devDependencies": {
         "preact": "^10.25.3",
@@ -50,7 +50,7 @@
     },
     "packages/react": {
       "name": "@elekcsv/react",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "dependencies": {
         "@elekcsv/core": "workspace:*",
       },
@@ -69,9 +69,9 @@
     },
     "packages/solid": {
       "name": "@elekcsv/solid",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "dependencies": {
-        "@elekcsv/core": "^0.2.0",
+        "@elekcsv/core": "^1.1.1",
       },
       "devDependencies": {
         "solid-js": "^1.9.3",
@@ -84,7 +84,7 @@
     },
     "packages/svelte": {
       "name": "@elekcsv/svelte",
-      "version": "1.0.1",
+      "version": "1.1.1",
       "dependencies": {
         "@elekcsv/core": "^0.2.0",
       },
@@ -99,7 +99,7 @@
     },
     "packages/vue": {
       "name": "@elekcsv/vue",
-      "version": "1.0.1",
+      "version": "1.1.1",
       "dependencies": {
         "@elekcsv/core": "^0.2.0",
       },
@@ -621,12 +621,6 @@
     "which": ["which@2.0.2", "", { "dependencies": { "isexe": "^2.0.0" }, "bin": { "node-which": "./bin/node-which" } }, "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA=="],
 
     "zone.js": ["zone.js@0.15.1", "", {}, "sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w=="],
-
-    "@elekcsv/angular/@elekcsv/core": ["@elekcsv/core@0.2.0", "", {}, "sha512-XFKi7+NyhaH71LKvbF7f4AkbECDJS0dRwjWnIdUqI35R3olnZwVNrFAzmJg42N1wO5Xg6FunDD3YgG7+F1A8NQ=="],
-
-    "@elekcsv/preact/@elekcsv/core": ["@elekcsv/core@0.2.0", "", {}, "sha512-XFKi7+NyhaH71LKvbF7f4AkbECDJS0dRwjWnIdUqI35R3olnZwVNrFAzmJg42N1wO5Xg6FunDD3YgG7+F1A8NQ=="],
-
-    "@elekcsv/solid/@elekcsv/core": ["@elekcsv/core@0.2.0", "", {}, "sha512-XFKi7+NyhaH71LKvbF7f4AkbECDJS0dRwjWnIdUqI35R3olnZwVNrFAzmJg42N1wO5Xg6FunDD3YgG7+F1A8NQ=="],
 
     "@manypkg/find-root/fs-extra": ["fs-extra@8.1.0", "", { "dependencies": { "graceful-fs": "^4.2.0", "jsonfile": "^4.0.0", "universalify": "^0.1.0" } }, "sha512-yhlQgA6mnOJUKOsRUFsgJdQCvkKhcz8tlZG5HBQfReYZy46OwLcY+Zia0mtdHsOo9y/hP+CxMN0TU9QxoOtG4g=="],
 

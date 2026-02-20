@@ -14,15 +14,7 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": [
-		"csv",
-		"import",
-		"angular",
-		"service",
-		"signals",
-		"headless",
-		"typescript"
-	],
+	"keywords": ["csv", "import", "angular", "service", "signals", "headless", "typescript"],
 	"engines": {
 		"node": ">=18"
 	},
@@ -42,10 +34,7 @@
 			}
 		}
 	},
-	"files": [
-		"dist",
-		"README.md"
-	],
+	"files": ["dist", "README.md"],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
