@@ -74,6 +74,11 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 		quote,
 	} = options;
 
+	const effectiveSchema = useMemo(
+		() => (locale ? { ...schema, locale } : schema),
+		[schema, locale]
+	);
+
 	// State management
 	const [state, dispatch] = useReducer(importerReducer, undefined, createInitialState);
 
@@ -190,10 +195,11 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 					data,
 					headers,
 					time: parseTime,
+					previewRows: maxPreviewRows,
 				});
 
 				// Perform column mapping
-				const mappingResult = mapColumns(headers, schema, {
+				const mappingResult = mapColumns(headers, effectiveSchema, {
 					fuzzyThreshold: 0.6,
 					autoAcceptThreshold: autoMapThreshold,
 				});
@@ -203,7 +209,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 				// Check if we can auto-map
 				if (autoMap && shouldAutoMap(mappingResult, autoMapThreshold)) {
 					// Apply mapping immediately (hasHeader: false since data doesn't include header)
-					const mappedData = applyMapping(data, mappingResult.mappings, schema, {
+					const mappedData = applyMapping(data, mappingResult.mappings, effectiveSchema, {
 						hasHeader: false,
 					});
 					dispatch({
@@ -220,7 +226,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 				dispatch({ type: "PARSE_ERROR", error: errorMessage });
 			}
 		},
-		[schema, delimiter, quote, maxRows, autoMap, autoMapThreshold]
+		[effectiveSchema, delimiter, quote, maxRows, autoMap, autoMapThreshold, maxPreviewRows]
 	);
 
 	// ============================================================
@@ -238,7 +244,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 
 		try {
 			// Apply the mapping to reorder columns (hasHeader: false since rawData doesn't include header)
-			const mappedData = applyMapping(state.rawData, state.mapping.mappings, schema, {
+			const mappedData = applyMapping(state.rawData, state.mapping.mappings, effectiveSchema, {
 				hasHeader: false,
 			});
 
@@ -250,7 +256,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 			const errorMessage = err instanceof Error ? err.message : "Failed to apply mapping";
 			dispatch({ type: "VALIDATE_ERROR", error: errorMessage });
 		}
-	}, [state.rawData, state.mapping, schema]);
+	}, [state.rawData, state.mapping, effectiveSchema]);
 
 	// ============================================================
 	// Validation
@@ -269,9 +275,9 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 
 				let result: ValidationResult | BitmapValidationResult;
 				if (useBitmap) {
-					result = validateBitmap(data, schema);
+					result = validateBitmap(data, effectiveSchema);
 				} else {
-					result = validate(data, schema);
+					result = validate(data, effectiveSchema);
 				}
 
 				// Check if cancelled after validation
@@ -292,7 +298,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 				dispatch({ type: "VALIDATE_ERROR", error: errorMessage });
 			}
 		},
-		[schema]
+		[effectiveSchema]
 	);
 
 	// ============================================================
@@ -318,9 +324,9 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 				parseTime: state.parseTime,
 				validationTime: state.validationTime,
 			},
-			schema
+			effectiveSchema
 		);
-	}, [state, schema]);
+	}, [state, effectiveSchema]);
 
 	// Call onComplete when we reach complete state
 	useEffect(() => {

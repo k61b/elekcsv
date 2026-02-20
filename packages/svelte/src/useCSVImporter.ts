@@ -34,13 +34,16 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 		schema,
 		autoMap = true,
 		autoMapThreshold = 0.8,
+		maxPreviewRows = 10,
 		maxRows,
+		locale,
 		onComplete,
 		onError,
 		onStepChange,
 		delimiter,
 		quote,
 	} = options;
+	const effectiveSchema = locale ? { ...schema, locale } : schema;
 
 	const store = writable<ImporterState>(createInitialState());
 	let prevStep: ImporterStep = "idle";
@@ -66,7 +69,7 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 					parseTime: state.parseTime,
 					validationTime: state.validationTime,
 				},
-				schema
+				effectiveSchema
 			);
 			if (result) {
 				onComplete(result);
@@ -107,9 +110,10 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 				data,
 				headers,
 				time: parseTime,
+				previewRows: maxPreviewRows,
 			});
 
-			const mappingResult = mapColumns(headers, schema, {
+			const mappingResult = mapColumns(headers, effectiveSchema, {
 				fuzzyThreshold: 0.6,
 				autoAcceptThreshold: autoMapThreshold,
 			});
@@ -117,7 +121,7 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 			dispatch({ type: "SET_MAPPING", mapping: mappingResult });
 
 			if (autoMap && shouldAutoMap(mappingResult, autoMapThreshold)) {
-				const mappedData = applyMapping(data, mappingResult.mappings, schema, {
+				const mappedData = applyMapping(data, mappingResult.mappings, effectiveSchema, {
 					hasHeader: false,
 				});
 				dispatch({
@@ -173,7 +177,7 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 			const mappedData = applyMapping(
 				stateSnapshot.rawData,
 				stateSnapshot.mapping.mappings,
-				schema,
+				effectiveSchema,
 				{
 					hasHeader: false,
 				}
@@ -195,9 +199,9 @@ export function createCSVImporter(options: UseCSVImporterOptions): CSVImporter {
 
 			let result: ValidationResult | BitmapValidationResult;
 			if (useBitmap) {
-				result = validateBitmap(data, schema);
+				result = validateBitmap(data, effectiveSchema);
 			} else {
-				result = validate(data, schema);
+				result = validate(data, effectiveSchema);
 			}
 
 			const validationTime = performance.now() - startTime;

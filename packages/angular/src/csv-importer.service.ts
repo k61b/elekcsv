@@ -4,8 +4,10 @@ import {
 	type ValidationError,
 	type ValidationResult,
 	applyMapping,
+	buildImportResult,
 	mapColumns,
 	parse,
+	shouldAutoMap,
 	validate,
 	validateBitmap,
 } from "@elekcsv/core";
@@ -18,8 +20,6 @@ import {
 } from "./state-machine";
 import type {
 	CSVImporterReturn,
-	ImportResult,
-	ImportStats,
 	ImporterState,
 	ImporterStep,
 	UseCSVImporterOptions,
@@ -27,60 +27,16 @@ import type {
 
 const BITMAP_THRESHOLD = 10_000;
 
-function buildImportResult(
-	state: ImporterState,
-	schema: import("@elekcsv/core").Schema
-): ImportResult | null {
-	if (!state.mappedData || !state.mapping) return null;
-	const validation = state.validation ?? state.bitmapValidation;
-	if (!validation) return null;
-
-	const schemaColumns = Object.keys(schema.columns);
-	const errorCount = state.bitmapValidation
-		? state.bitmapValidation.errorCount
-		: (state.validation?.errors.length ?? 0);
-	const errorRowCount = state.bitmapValidation
-		? state.bitmapValidation.getErrorRowCount()
-		: new Set(state.validation?.errors.map((e) => e.row)).size;
-
-	const stats: ImportStats = {
-		totalRows: state.rowCount,
-		validRows: state.rowCount - errorRowCount,
-		invalidRows: errorRowCount,
-		errorCount,
-		parseTime: state.parseTime ?? 0,
-		validationTime: state.validationTime ?? 0,
-	};
-
-	return {
-		data: state.mappedData,
-		headers: schemaColumns,
-		mapping: state.mapping,
-		validation,
-		stats,
-	};
-}
-
-function shouldAutoMap(result: ReturnType<typeof mapColumns>, threshold: number): boolean {
-	if (result.unmappedSchemaColumns.length > 0) return false;
-	for (const mapping of result.mappings) {
-		if (mapping.schemaColumn === "") continue;
-		if (mapping.confidence === "exact" || mapping.confidence === "alias") continue;
-		if (mapping.confidence === "fuzzy" && mapping.score >= threshold) continue;
-		return false;
-	}
-	return true;
-}
-
 @Injectable()
 export class CSVImporterService {
 	private state = signal<ImporterState>(createInitialState());
 	private prevStep: ImporterStep = "idle";
-	private schema: import("@elekcsv/core").Schema;
+	private effectiveSchema: import("@elekcsv/core").Schema;
 	private autoMap: boolean;
 	private autoMapThreshold: number;
+	private maxPreviewRows: number;
 	private maxRows?: number;
-	private onComplete?: (result: ImportResult) => void;
+	private onComplete?: UseCSVImporterOptions["onComplete"];
 	private onError?: (error: string) => void;
 	private onStepChange?: (step: ImporterStep) => void;
 	private delimiter?: string;
@@ -102,9 +58,12 @@ export class CSVImporterService {
 	canGoForward = computed(() => checkCanGoForward(this.state().step));
 
 	constructor(options: UseCSVImporterOptions) {
-		this.schema = options.schema;
+		this.effectiveSchema = options.locale
+			? { ...options.schema, locale: options.locale }
+			: options.schema;
 		this.autoMap = options.autoMap ?? true;
 		this.autoMapThreshold = options.autoMapThreshold ?? 0.8;
+		this.maxPreviewRows = options.maxPreviewRows ?? 10;
 		this.maxRows = options.maxRows;
 		this.onComplete = options.onComplete;
 		this.onError = options.onError;
@@ -120,7 +79,18 @@ export class CSVImporterService {
 			}
 			if (s.step === "error" && s.error) this.onError?.(s.error);
 			if (s.step === "complete" && this.onComplete) {
-				const result = buildImportResult(s, this.schema);
+				const result = buildImportResult(
+					{
+						mappedData: s.mappedData,
+						mapping: s.mapping,
+						validation: s.validation,
+						bitmapValidation: s.bitmapValidation,
+						rowCount: s.rowCount,
+						parseTime: s.parseTime,
+						validationTime: s.validationTime,
+					},
+					this.effectiveSchema
+				);
 				if (result) this.onComplete(result);
 			}
 		});
@@ -143,16 +113,22 @@ export class CSVImporterService {
 			let data = parseResult.rows;
 			if (this.maxRows && data.length > this.maxRows) data = data.slice(0, this.maxRows);
 
-			this.dispatch({ type: "PARSE_COMPLETE", data, headers, time: parseTime });
+			this.dispatch({
+				type: "PARSE_COMPLETE",
+				data,
+				headers,
+				time: parseTime,
+				previewRows: this.maxPreviewRows,
+			});
 
-			const mappingResult = mapColumns(headers, this.schema, {
+			const mappingResult = mapColumns(headers, this.effectiveSchema, {
 				fuzzyThreshold: 0.6,
 				autoAcceptThreshold: this.autoMapThreshold,
 			});
 			this.dispatch({ type: "SET_MAPPING", mapping: mappingResult });
 
 			if (this.autoMap && shouldAutoMap(mappingResult, this.autoMapThreshold)) {
-				const mappedData = applyMapping(data, mappingResult.mappings, this.schema, {
+				const mappedData = applyMapping(data, mappingResult.mappings, this.effectiveSchema, {
 					hasHeader: false,
 				});
 				this.dispatch({ type: "SKIP_MAPPING", mapping: mappingResult, mappedData });
@@ -191,7 +167,7 @@ export class CSVImporterService {
 		const s = this.state();
 		if (!s.rawData || !s.mapping) return;
 		try {
-			const mappedData = applyMapping(s.rawData, s.mapping.mappings, this.schema, {
+			const mappedData = applyMapping(s.rawData, s.mapping.mappings, this.effectiveSchema, {
 				hasHeader: false,
 			});
 			this.dispatch({ type: "CONFIRM_MAPPING", mappedData });
@@ -209,8 +185,8 @@ export class CSVImporterService {
 			const startTime = performance.now();
 			const useBitmap = data.length > BITMAP_THRESHOLD;
 			const result: ValidationResult | BitmapValidationResult = useBitmap
-				? validateBitmap(data, this.schema)
-				: validate(data, this.schema);
+				? validateBitmap(data, this.effectiveSchema)
+				: validate(data, this.effectiveSchema);
 			const validationTime = performance.now() - startTime;
 			this.dispatch({
 				type: "VALIDATE_COMPLETE",

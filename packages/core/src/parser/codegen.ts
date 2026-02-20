@@ -41,7 +41,7 @@ interface SchemaInfo {
 const cache = new Map<string, CompiledParser>();
 
 function getCacheKey(info: SchemaInfo): string {
-	return `${info.delimiter}-${info.fieldCount}-${info.hasQuotes}-${info.lineEnding}`;
+	return `${info.delimiter}-${info.quote}-${info.fieldCount}-${info.hasQuotes}-${info.lineEnding}`;
 }
 
 // ============================================================================

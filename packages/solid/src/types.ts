@@ -39,7 +39,13 @@ export type ImporterAction =
 	| { type: "LOAD_FILE"; file: File }
 	| { type: "LOAD_STRING"; content: string; fileName?: string }
 	| { type: "PARSE_START" }
-	| { type: "PARSE_COMPLETE"; data: string[][]; headers: string[]; time: number }
+	| {
+			type: "PARSE_COMPLETE";
+			data: string[][];
+			headers: string[];
+			time: number;
+			previewRows?: number;
+	  }
 	| { type: "PARSE_ERROR"; error: string }
 	| { type: "SET_MAPPING"; mapping: MappingResult }
 	| { type: "UPDATE_MAPPING"; csvIndex: number; schemaColumn: string | null }

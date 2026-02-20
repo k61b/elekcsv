@@ -174,6 +174,15 @@ describe("cache", () => {
 
 		expect(compiled1.fn).not.toBe(compiled2.fn);
 	});
+
+	test("returns different function for different quote characters", () => {
+		const sample = "'a',\"b\"\n'1',\"2\"";
+
+		const compiled1 = compileParser(sample, { quote: '"' });
+		const compiled2 = compileParser(sample, { quote: "'" });
+
+		expect(compiled1.fn).not.toBe(compiled2.fn);
+	});
 });
 
 describe("parseCodegen", () => {

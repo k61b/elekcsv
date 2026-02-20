@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { compileSchema, parse, validate, validateBitmap } from "./index";
+import { parse, validate } from "./index";
 import type { Schema } from "./types";
 
 export interface WorkerMessage {
@@ -30,8 +30,6 @@ export interface WorkerResponse {
 	error?: string;
 }
 
-const BITMAP_THRESHOLD = 10_000;
-
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 	const { id, type, payload } = e.data;
 
@@ -59,13 +57,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 			};
 		} else if (type === "validate") {
 			const p = payload as ValidatePayload;
-			const useBitmap = p.data.length > BITMAP_THRESHOLD;
-
-			if (useBitmap) {
-				result = validateBitmap(p.data, p.schema);
-			} else {
-				result = validate(p.data, p.schema);
-			}
+			result = validate(p.data, p.schema);
 		} else if (type === "parseAndValidate") {
 			const p = payload as ParsePayload & { schema: Schema };
 
@@ -81,13 +73,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 				data = data.slice(0, p.maxRows);
 			}
 
-			const useBitmap = data.length > BITMAP_THRESHOLD;
-			let validationResult: unknown;
-			if (useBitmap) {
-				validationResult = validateBitmap(data, p.schema);
-			} else {
-				validationResult = validate(data, p.schema);
-			}
+			const validationResult = validate(data, p.schema);
 
 			result = {
 				headers: parseResult.headers,

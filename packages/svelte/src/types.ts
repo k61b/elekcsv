@@ -45,6 +45,7 @@ export type ImporterAction =
 			data: string[][];
 			headers: string[];
 			time: number;
+			previewRows?: number;
 	  }
 	| { type: "PARSE_ERROR"; error: string }
 	| { type: "SET_MAPPING"; mapping: MappingResult }

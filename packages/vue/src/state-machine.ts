@@ -75,7 +75,7 @@ export function importerReducer(state: ImporterState, action: ImporterAction): I
 				step: "mapping",
 				rawData: action.data,
 				headers: action.headers,
-				preview: action.data.slice(0, 10),
+				preview: action.data.slice(0, action.previewRows ?? 10),
 				rowCount: action.data.length,
 				parseTime: action.time,
 				progress: 100,

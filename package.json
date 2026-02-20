@@ -31,9 +31,7 @@
 		"version": "changeset version",
 		"release": "bun run build && changeset publish",
 		"bench": "bun run benchmarks/parse-comparison.ts",
-		"bench:multi": "bun run benchmarks/multi-thread-comparison.ts",
 		"bench:correctness": "bun run benchmarks/correctness-comparison.ts",
-		"bench:profile": "bun run benchmarks/profile-breakdown.ts",
 		"bench:mapping": "bun run benchmarks/mapping-benchmark.ts"
 	},
 	"devDependencies": {

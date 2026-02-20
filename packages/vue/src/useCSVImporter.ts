@@ -34,13 +34,16 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 		schema,
 		autoMap = true,
 		autoMapThreshold = 0.8,
+		maxPreviewRows = 10,
 		maxRows,
+		locale,
 		onComplete,
 		onError,
 		onStepChange,
 		delimiter,
 		quote,
 	} = options;
+	const effectiveSchema = locale ? { ...schema, locale } : schema;
 
 	const state = shallowRef<ImporterState>(createInitialState());
 	let prevStep: ImporterStep = "idle";
@@ -73,9 +76,10 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 				data,
 				headers,
 				time: parseTime,
+				previewRows: maxPreviewRows,
 			});
 
-			const mappingResult = mapColumns(headers, schema, {
+			const mappingResult = mapColumns(headers, effectiveSchema, {
 				fuzzyThreshold: 0.6,
 				autoAcceptThreshold: autoMapThreshold,
 			});
@@ -83,7 +87,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 			dispatch({ type: "SET_MAPPING", mapping: mappingResult });
 
 			if (autoMap && shouldAutoMap(mappingResult, autoMapThreshold)) {
-				const mappedData = applyMapping(data, mappingResult.mappings, schema, {
+				const mappedData = applyMapping(data, mappingResult.mappings, effectiveSchema, {
 					hasHeader: false,
 				});
 				dispatch({
@@ -136,9 +140,14 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 		}
 
 		try {
-			const mappedData = applyMapping(state.value.rawData, state.value.mapping.mappings, schema, {
-				hasHeader: false,
-			});
+			const mappedData = applyMapping(
+				state.value.rawData,
+				state.value.mapping.mappings,
+				effectiveSchema,
+				{
+					hasHeader: false,
+				}
+			);
 
 			dispatch({ type: "CONFIRM_MAPPING", mappedData });
 
@@ -156,9 +165,9 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 
 			let result: ValidationResult | BitmapValidationResult;
 			if (useBitmap) {
-				result = validateBitmap(data, schema);
+				result = validateBitmap(data, effectiveSchema);
 			} else {
-				result = validate(data, schema);
+				result = validate(data, effectiveSchema);
 			}
 
 			const validationTime = performance.now() - startTime;
@@ -264,7 +273,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 						parseTime: state.value.parseTime,
 						validationTime: state.value.validationTime,
 					},
-					schema
+					effectiveSchema
 				);
 				if (result) {
 					onComplete(result);
