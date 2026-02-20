@@ -217,3 +217,50 @@ async function profilePipeline(csv: string) {
 | csv-parse | 120ms | N/A | N/A | N/A |
 
 *elek is the only library that provides validation, column mapping, and locale support out of the box.*
+
+## Web Workers
+
+For very large files, you can offload parsing and validation to a Web Worker to keep the main thread responsive:
+
+```typescript
+import { createWorkerClient } from "@elekcsv/core";
+
+const worker = createWorkerClient({
+  workerUrl: "/dist/worker.js"
+});
+
+// Process in background - UI stays responsive
+const result = await worker.parseAndValidate(csvContent, schema, {
+  maxRows: 100000
+});
+
+worker.terminate();
+```
+
+### Worker Setup
+
+Add the worker to your build or serve it statically:
+
+```typescript
+// Vite: public/worker.js
+importScripts("/dist/worker.js");
+```
+
+Or import directly in browsers that support it:
+
+```typescript
+const worker = new Worker(
+  new URL("@elekcsv/core/worker.js", import.meta.url),
+  { type: "module" }
+);
+
+const client = createWorkerClient({ worker });
+```
+
+### When to Use Workers
+
+| File Size | Recommended |
+|-----------|-------------|
+| < 10K rows | Main thread (default) |
+| 10K - 100K rows | Consider worker |
+| > 100K rows | Use worker |

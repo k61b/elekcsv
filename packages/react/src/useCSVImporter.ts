@@ -3,9 +3,10 @@ import {
 	type ValidationError,
 	type ValidationResult,
 	applyMapping,
-	updateMapping as coreUpdateMapping,
+	buildImportResult,
 	mapColumns,
 	parse,
+	shouldAutoMap,
 	validate,
 	validateBitmap,
 } from "@elekcsv/core";
@@ -82,6 +83,12 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 	// Track pending content for string loading
 	const pendingContentRef = useRef<string | null>(null);
 
+	// Track current operation for cancellation
+	const abortControllerRef = useRef<AbortController | null>(null);
+
+	// Track if current operation was cancelled
+	const cancelledRef = useRef(false);
+
 	// ============================================================
 	// Step change callback
 	// ============================================================
@@ -149,8 +156,17 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 
 	const processContent = useCallback(
 		(content: string) => {
+			// Create new abort controller for this operation
+			abortControllerRef.current = new AbortController();
+			cancelledRef.current = false;
+
 			try {
 				const startTime = performance.now();
+
+				// Check if cancelled before parsing
+				if (cancelledRef.current) {
+					return;
+				}
 
 				// Parse CSV
 				const parseResult = parse(content, {
@@ -242,6 +258,11 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 
 	const runValidation = useCallback(
 		(data: string[][]) => {
+			// Check if cancelled before validation
+			if (cancelledRef.current) {
+				return;
+			}
+
 			try {
 				const startTime = performance.now();
 				const useBitmap = data.length > BITMAP_THRESHOLD;
@@ -251,6 +272,11 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 					result = validateBitmap(data, schema);
 				} else {
 					result = validate(data, schema);
+				}
+
+				// Check if cancelled after validation
+				if (cancelledRef.current) {
+					return;
 				}
 
 				const validationTime = performance.now() - startTime;
@@ -281,52 +307,30 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 		dispatch({ type: "ACCEPT" });
 	}, [state.step]);
 
-	const buildImportResult = useCallback((): ImportResult | null => {
-		if (!state.mappedData || !state.mapping) {
-			return null;
-		}
-
-		const validation = state.validation ?? state.bitmapValidation;
-		if (!validation) {
-			return null;
-		}
-
-		const schemaColumns = Object.keys(schema.columns);
-		const errorCount = state.bitmapValidation
-			? state.bitmapValidation.errorCount
-			: (state.validation?.errors.length ?? 0);
-
-		const errorRowCount = state.bitmapValidation
-			? state.bitmapValidation.getErrorRowCount()
-			: new Set(state.validation?.errors.map((e) => e.row)).size;
-
-		const stats: ImportStats = {
-			totalRows: state.rowCount,
-			validRows: state.rowCount - errorRowCount,
-			invalidRows: errorRowCount,
-			errorCount,
-			parseTime: state.parseTime ?? 0,
-			validationTime: state.validationTime ?? 0,
-		};
-
-		return {
-			data: state.mappedData,
-			headers: schemaColumns,
-			mapping: state.mapping,
-			validation,
-			stats,
-		};
+	const getImportResult = useCallback(() => {
+		return buildImportResult(
+			{
+				mappedData: state.mappedData,
+				mapping: state.mapping,
+				validation: state.validation,
+				bitmapValidation: state.bitmapValidation,
+				rowCount: state.rowCount,
+				parseTime: state.parseTime,
+				validationTime: state.validationTime,
+			},
+			schema
+		);
 	}, [state, schema]);
 
 	// Call onComplete when we reach complete state
 	useEffect(() => {
 		if (state.step === "complete" && onComplete) {
-			const result = buildImportResult();
+			const result = getImportResult();
 			if (result) {
 				onComplete(result);
 			}
 		}
-	}, [state.step, onComplete, buildImportResult]);
+	}, [state.step, onComplete, getImportResult]);
 
 	const reset = useCallback(() => {
 		dispatch({ type: "RESET" });
@@ -334,6 +338,15 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 
 	const goBack = useCallback(() => {
 		dispatch({ type: "GO_BACK" });
+	}, []);
+
+	const cancel = useCallback(() => {
+		cancelledRef.current = true;
+		if (abortControllerRef.current) {
+			abortControllerRef.current.abort();
+			abortControllerRef.current = null;
+		}
+		dispatch({ type: "RESET" });
 	}, []);
 
 	// ============================================================
@@ -394,8 +407,11 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 	// Computed Values
 	// ============================================================
 
-	const isLoading = state.step === "parsing" || state.step === "validating";
-	const isComplete = state.step === "complete";
+	const isLoading = useMemo(
+		() => state.step === "parsing" || state.step === "validating",
+		[state.step]
+	);
+	const isComplete = useMemo(() => state.step === "complete", [state.step]);
 	const hasErrors = useMemo(() => {
 		if (state.bitmapValidation) {
 			return state.bitmapValidation.errorCount > 0;
@@ -406,8 +422,8 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 		return false;
 	}, [state.validation, state.bitmapValidation]);
 
-	const canGoBack = checkCanGoBack(state.step);
-	const canGoForward = checkCanGoForward(state.step);
+	const canGoBack = useMemo(() => checkCanGoBack(state.step), [state.step]);
+	const canGoForward = useMemo(() => checkCanGoForward(state.step), [state.step]);
 
 	// ============================================================
 	// Return
@@ -433,6 +449,7 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 		accept,
 		reset,
 		goBack,
+		cancel,
 
 		// Data accessors
 		getErrors,
@@ -440,41 +457,4 @@ export function useCSVImporter(options: UseCSVImporterOptions): UseCSVImporterRe
 		getCellError,
 		getErrorSummary,
 	};
-}
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
-
-/**
- * Determines if we should auto-map based on the mapping result.
- * Auto-maps if all matched columns have high confidence (exact, alias, or high fuzzy score).
- */
-function shouldAutoMap(result: ReturnType<typeof mapColumns>, threshold: number): boolean {
-	// Don't auto-map if there are unmapped schema columns (required columns missing)
-	if (result.unmappedSchemaColumns.length > 0) {
-		return false;
-	}
-
-	// Check that all mappings are high confidence
-	for (const mapping of result.mappings) {
-		if (mapping.schemaColumn === "") {
-			// Unmapped CSV column is okay (might be extra column in CSV)
-			continue;
-		}
-
-		// Must be exact, alias, or high-score fuzzy
-		if (mapping.confidence === "exact" || mapping.confidence === "alias") {
-			continue;
-		}
-
-		if (mapping.confidence === "fuzzy" && mapping.score >= threshold) {
-			continue;
-		}
-
-		// Low confidence match - need manual review
-		return false;
-	}
-
-	return true;
 }

@@ -81,3 +81,22 @@ export type { LocaleConfig, ParsedDate, LocaleFieldType } from "./locale";
 
 // Type exports
 export * from "./types";
+
+// Importer utilities (shared by framework adapters)
+export {
+	buildImportResult,
+	shouldAutoMap,
+	type ImportResult,
+	type ImportStats,
+	type ImporterStateData,
+} from "./importer";
+
+// Worker exports
+export {
+	CSVWorkerClient,
+	createWorkerClient,
+	type WorkerClientOptions,
+	type ParseResult as WorkerParseResult,
+	type ValidateResult as WorkerValidateResult,
+	type ParseAndValidateResult as WorkerParseAndValidateResult,
+} from "./worker-client";

@@ -1,6 +1,6 @@
 {
 	"name": "@elekcsv/preact",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Preact hooks for elek CSV import",
 	"type": "module",
 	"license": "Apache-2.0",
@@ -11,29 +11,57 @@
 		"directory": "packages/preact"
 	},
 	"homepage": "https://github.com/k61b/elekcsv",
-	"bugs": { "url": "https://github.com/k61b/elekcsv/issues" },
-	"keywords": ["csv", "import", "preact", "hooks", "headless", "typescript"],
-	"engines": { "node": ">=18" },
+	"bugs": {
+		"url": "https://github.com/k61b/elekcsv/issues"
+	},
+	"keywords": [
+		"csv",
+		"import",
+		"preact",
+		"hooks",
+		"headless",
+		"typescript"
+	],
+	"engines": {
+		"node": ">=18"
+	},
 	"sideEffects": false,
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
-			"require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+			"import": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			}
 		}
 	},
-	"files": ["dist", "README.md", "LICENSE"],
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
 	"scripts": {
 		"build": "tsup",
 		"dev": "tsup --watch",
 		"test": "bun test",
 		"test:watch": "bun test --watch"
 	},
-	"dependencies": { "@elekcsv/core": "^0.2.0" },
-	"publishConfig": { "access": "public", "registry": "https://registry.npmjs.org" },
-	"peerDependencies": { "preact": ">=10" },
+	"dependencies": {
+		"@elekcsv/core": "^1.1.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org"
+	},
+	"peerDependencies": {
+		"preact": ">=10"
+	},
 	"devDependencies": {
 		"preact": "^10.25.3",
 		"tsup": "^8.3.5",

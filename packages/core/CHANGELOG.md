@@ -1,5 +1,11 @@
 # @elekcsv/core
 
+## 1.1.0
+
+### Minor Changes
+
+- Add Web Worker support, cancellation tokens, and shared importer utilities. Memoize computed values in React hook. Fix Svelte subscription leak.
+
 ## 1.0.0
 
 ### Major Changes

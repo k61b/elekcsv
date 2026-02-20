@@ -86,7 +86,7 @@ interface UseCSVImporterOptions {
   autoMapThreshold?: number;   // Confidence threshold for auto-map (default: 0.8)
   maxPreviewRows?: number;     // Rows to include in preview (default: 10)
   maxRows?: number;            // Max rows to process (optional)
-  locale?: string;             // Override schema locale
+  locale?: string;              // Override schema locale
 
   // Callbacks
   onComplete?: (result: ImportResult) => void;
@@ -94,8 +94,11 @@ interface UseCSVImporterOptions {
   onStepChange?: (step: ImporterStep) => void;
 
   // Parser options
-  delimiter?: string;          // CSV delimiter (default: ",")
-  quote?: string;              // Quote character (default: '"')
+  delimiter?: string;           // CSV delimiter (default: ",")
+  quote?: string;               // Quote character (default: '"')
+
+  // Worker options
+  useWorker?: boolean;          // Use Web Worker for parsing/validation (default: false)
 }
 ```
 
@@ -111,8 +114,8 @@ interface UseCSVImporterReturn {
   isLoading: boolean;          // True during parsing/validating
   isComplete: boolean;         // True when step === "complete"
   hasErrors: boolean;          // True if validation found errors
-  canGoBack: boolean;          // True if goBack() is available
-  canGoForward: boolean;       // True if forward action available
+  canGoBack: boolean;         // True if goBack() is available
+  canGoForward: boolean;      // True if forward action available
 
   // Actions
   loadFile: (file: File) => void;
@@ -122,6 +125,7 @@ interface UseCSVImporterReturn {
   accept: () => void;
   reset: () => void;
   goBack: () => void;
+  cancel: () => void;         // Cancel current operation
 
   // Data accessors
   getErrors: (options?: { limit?: number; offset?: number }) => ValidationError[];
@@ -423,6 +427,26 @@ const importer = useCSVImporter({ schema });
 // Load from string (e.g., from API or clipboard)
 importer.loadString(csvContent, "data.csv");
 ```
+
+## Cancelling Operations
+
+You can cancel ongoing parsing or validation operations:
+
+```typescript
+const { loadFile, cancel, isLoading } = useCSVImporter({ schema });
+
+// Cancel any ongoing operation
+function handleCancel() {
+  cancel();
+}
+
+// Use in UI
+<button onClick={handleCancel} disabled={!isLoading}>
+  Cancel
+</button>
+```
+
+Calling `cancel()` aborts the current operation and resets the importer to idle state.
 
 ## State Machine Utilities
 

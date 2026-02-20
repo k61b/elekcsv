@@ -390,6 +390,53 @@ These are exported for advanced use cases:
 
 ---
 
+### Web Worker
+
+#### `createWorkerClient(options?)`
+
+Create a client for off-main-thread CSV processing using Web Workers.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `options.worker` | `Worker` | Existing Worker instance |
+| `options.workerUrl` | `string` | URL to worker script |
+
+**Returns:** `CSVWorkerClient`
+
+```typescript
+import { createWorkerClient } from "@elekcsv/core";
+
+const client = createWorkerClient({
+  workerUrl: "/dist/worker.js"
+});
+
+// Parse CSV in worker
+const parseResult = await client.parse(csvContent, {
+  delimiter: ",",
+  maxRows: 10000
+});
+
+// Validate in worker
+const validationResult = await client.validate(data, schema);
+
+// Parse and validate in one call
+const result = await client.parseAndValidate(csvContent, schema);
+
+// Clean up
+client.terminate();
+```
+
+#### `CSVWorkerClient` Methods
+
+| Method | Description |
+|--------|-------------|
+| `parse(content, options?)` | Parse CSV string |
+| `validate(data, schema)` | Validate data array |
+| `parseAndValidate(content, schema, options?)` | Parse then validate |
+| `terminate()` | Stop worker and clean up |
+
+---
+
 ### Locale
 
 #### `registerLocale(config)`
@@ -574,6 +621,7 @@ React hook for CSV import with parsing, column mapping, and validation.
 | `onStepChange` | `(step: ImporterStep) => void` | — | Called on step change |
 | `delimiter` | `string` | `","` | CSV field delimiter |
 | `quote` | `string` | `'"'` | Quote character |
+| `useWorker` | `boolean` | `false` | Use Web Worker for parsing/validation |
 
 #### Return Value
 
@@ -598,6 +646,7 @@ interface UseCSVImporterReturn {
   accept: () => void;
   reset: () => void;
   goBack: () => void;
+  cancel: () => void;  // Cancel current operation
 
   // Data accessors
   getErrors: (options?: { limit?: number; offset?: number }) => ValidationError[];

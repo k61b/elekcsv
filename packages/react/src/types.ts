@@ -154,6 +154,10 @@ export interface UseCSVImporterOptions {
 	delimiter?: string;
 	/** Quote character for escaping. Default: '"' */
 	quote?: string;
+
+	// Worker options
+	/** Use Web Worker for parsing/validation (useful for large files) */
+	useWorker?: boolean;
 }
 
 // ============================================================================
@@ -235,6 +239,8 @@ export interface UseCSVImporterReturn {
 	reset: () => void;
 	/** Go back to previous step */
 	goBack: () => void;
+	/** Cancel current operation (parsing/validating) */
+	cancel: () => void;
 
 	// Data accessors
 	/** Get validation errors with pagination */

@@ -3,8 +3,10 @@ import {
 	type ValidationError,
 	type ValidationResult,
 	applyMapping,
+	buildImportResult,
 	mapColumns,
 	parse,
+	shouldAutoMap,
 	validate,
 	validateBitmap,
 } from "@elekcsv/core";
@@ -26,70 +28,6 @@ import type {
 } from "./types";
 
 const BITMAP_THRESHOLD = 10_000;
-
-function buildImportResult(
-	state: ImporterState,
-	schema: import("@elekcsv/core").Schema
-): ImportResult | null {
-	if (!state.mappedData || !state.mapping) {
-		return null;
-	}
-
-	const validation = state.validation ?? state.bitmapValidation;
-	if (!validation) {
-		return null;
-	}
-
-	const schemaColumns = Object.keys(schema.columns);
-	const errorCount = state.bitmapValidation
-		? state.bitmapValidation.errorCount
-		: (state.validation?.errors.length ?? 0);
-
-	const errorRowCount = state.bitmapValidation
-		? state.bitmapValidation.getErrorRowCount()
-		: new Set(state.validation?.errors.map((e) => e.row)).size;
-
-	const stats: ImportStats = {
-		totalRows: state.rowCount,
-		validRows: state.rowCount - errorRowCount,
-		invalidRows: errorRowCount,
-		errorCount,
-		parseTime: state.parseTime ?? 0,
-		validationTime: state.validationTime ?? 0,
-	};
-
-	return {
-		data: state.mappedData,
-		headers: schemaColumns,
-		mapping: state.mapping,
-		validation,
-		stats,
-	};
-}
-
-function shouldAutoMap(result: ReturnType<typeof mapColumns>, threshold: number): boolean {
-	if (result.unmappedSchemaColumns.length > 0) {
-		return false;
-	}
-
-	for (const mapping of result.mappings) {
-		if (mapping.schemaColumn === "") {
-			continue;
-		}
-
-		if (mapping.confidence === "exact" || mapping.confidence === "alias") {
-			continue;
-		}
-
-		if (mapping.confidence === "fuzzy" && mapping.score >= threshold) {
-			continue;
-		}
-
-		return false;
-	}
-
-	return true;
-}
 
 export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterReturn {
 	const {
@@ -316,7 +254,18 @@ export function useCSVImporter(options: UseCSVImporterOptions): CSVImporterRetur
 		() => state.value.step,
 		(step: ImporterStep) => {
 			if (step === "complete" && onComplete) {
-				const result = buildImportResult(state.value, schema);
+				const result = buildImportResult(
+					{
+						mappedData: state.value.mappedData,
+						mapping: state.value.mapping,
+						validation: state.value.validation,
+						bitmapValidation: state.value.bitmapValidation,
+						rowCount: state.value.rowCount,
+						parseTime: state.value.parseTime,
+						validationTime: state.value.validationTime,
+					},
+					schema
+				);
 				if (result) {
 					onComplete(result);
 				}
