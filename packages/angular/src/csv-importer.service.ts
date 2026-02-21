@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, signal } from "@angular/core";
+import { Injectable, computed, signal } from "@angular/core";
 import {
 	type BitmapValidationResult,
 	type ValidationError,
@@ -71,33 +71,40 @@ export class CSVImporterService {
 		this.delimiter = options.delimiter;
 		this.quote = options.quote;
 
-		effect(() => {
-			const s = this.state();
-			if (this.prevStep !== s.step) {
-				this.prevStep = s.step;
-				this.onStepChange?.(s.step);
-			}
-			if (s.step === "error" && s.error) this.onError?.(s.error);
-			if (s.step === "complete" && this.onComplete) {
-				const result = buildImportResult(
-					{
-						mappedData: s.mappedData,
-						mapping: s.mapping,
-						validation: s.validation,
-						bitmapValidation: s.bitmapValidation,
-						rowCount: s.rowCount,
-						parseTime: s.parseTime,
-						validationTime: s.validationTime,
-					},
-					this.effectiveSchema
-				);
-				if (result) this.onComplete(result);
-			}
-		});
+		this.notifyStateChange();
 	}
 
 	private dispatch(action: import("./types").ImporterAction) {
 		this.state.update((s) => importerReducer(s, action));
+		this.notifyStateChange();
+	}
+
+	private notifyStateChange() {
+		const s = this.state();
+		if (this.prevStep !== s.step) {
+			this.prevStep = s.step;
+			this.onStepChange?.(s.step);
+		}
+
+		if (s.step === "error" && s.error) {
+			this.onError?.(s.error);
+		}
+
+		if (s.step === "complete" && this.onComplete) {
+			const result = buildImportResult(
+				{
+					mappedData: s.mappedData,
+					mapping: s.mapping,
+					validation: s.validation,
+					bitmapValidation: s.bitmapValidation,
+					rowCount: s.rowCount,
+					parseTime: s.parseTime,
+					validationTime: s.validationTime,
+				},
+				this.effectiveSchema
+			);
+			if (result) this.onComplete(result);
+		}
 	}
 
 	private processContent(content: string) {

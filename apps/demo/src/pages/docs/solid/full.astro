@@ -1,0 +1,81 @@
+---
+// src/pages/docs/solid/full.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Solid">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/solid
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">6.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    A complete look at configuration options and return values for
+    <code>useCSVImporter</code> in SolidJS.
+  </p>
+
+  <h2>Configuration Arguments</h2>
+  <p>
+    The hook accepts core parser/schema configuration plus lifecycle callbacks and
+    behavior controls for automapping.
+  </p>
+
+  <pre><code>type UseCSVImporterOptions = &#123;
+  schema: Schema
+  autoMap?: boolean
+  autoMapThreshold?: number
+  maxPreviewRows?: number
+  maxRows?: number
+  locale?: string
+  onComplete?: (result: ImportResult) =&gt; void
+  onError?: (error: string) =&gt; void
+  onStepChange?: (step: ImporterStep) =&gt; void
+  delimiter?: string
+  quote?: string
+&#125;</code></pre>
+
+  <h2>Hook Return Values</h2>
+  <p>
+    The return object gives direct access to importer state, accessors, and
+    actions for mapping, validation, and flow navigation.
+  </p>
+
+  <pre><code>type CSVImporterReturn = &#123;
+  state: ImporterState
+  step: Accessor&lt;ImporterStep&gt;
+  isLoading: Accessor&lt;boolean&gt;
+  isComplete: Accessor&lt;boolean&gt;
+  hasErrors: Accessor&lt;boolean&gt;
+  canGoBack: Accessor&lt;boolean&gt;
+  canGoForward: Accessor&lt;boolean&gt;
+  loadFile: (file: File) =&gt; void
+  loadString: (content: string, fileName?: string) =&gt; void
+  updateMapping: (csvIndex: number, schemaColumn: string | null) =&gt; void
+  confirmMapping: () =&gt; void
+  accept: () =&gt; void
+  reset: () =&gt; void
+  goBack: () =&gt; void
+  getErrors: (options?: &#123; limit?: number; offset?: number &#125;) =&gt; ValidationError[]
+  getRowErrors: (row: number) =&gt; ValidationError[]
+  getCellError: (row: number, col: number) =&gt; ValidationError | null
+  getErrorSummary: () =&gt; Record&lt;string, number&gt;
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/solid/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

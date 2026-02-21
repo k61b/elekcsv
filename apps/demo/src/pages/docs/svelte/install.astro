@@ -1,0 +1,65 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Svelte">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/svelte
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">3.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/svelte</code> package brings the same parsing pipeline from
+    <code>@elekcsv/core</code> into Svelte with a store-first API. You keep full
+    control over your UI while the importer handles parse, mapping, and validation
+    state.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    You only need the Svelte package plus the core engine. The API works in
+    Svelte 3+ and can be used in regular Svelte apps or SvelteKit.
+  </p>
+
+  <pre><code>npm install @elekcsv/svelte @elekcsv/core
+# or
+yarn add @elekcsv/svelte @elekcsv/core
+# or
+pnpm add @elekcsv/svelte @elekcsv/core</code></pre>
+
+  <h2>Why Svelte Store API?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">Reactive by default:</strong> Import progress and
+      step transitions are exposed via a Svelte store, so your UI updates without
+      extra state wiring.
+    </li>
+    <li>
+      <strong class="text-black">Headless architecture:</strong> You render the dropzone,
+      mapper, and review screens exactly how your product needs.
+    </li>
+    <li>
+      <strong class="text-black">Same core performance:</strong> The importer uses
+      <code>@elekcsv/core</code> under the hood for fast parsing and validation.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/svelte/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

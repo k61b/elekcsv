@@ -1,0 +1,92 @@
+---
+// src/pages/docs/solid/advanced.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Advanced Usage - Solid">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/solid
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">6.3 Advanced Usage</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The real power of <code>useCSVImporter</code> comes from its state-machine based
+    workflow. Instead of manually syncing parsing flags, you react to accessor values.
+  </p>
+
+  <h2>The Lifecycle State</h2>
+  <p>
+    The hook exposes accessors for each stage in the import flow, making it easy to
+    render the right screen at the right time.
+  </p>
+
+  <pre><code>import &#123; useCSVImporter &#125; from '@elekcsv/solid'
+
+const importer = useCSVImporter(&#123; schema &#125;)
+
+if (importer.isLoading()) &#123;
+  return &lt;LoadingSpinner text="Reading rows..." /&gt;
+&#125;
+
+if (importer.hasErrors()) &#123;
+  return &lt;ErrorScreen onReset=&#123;importer.reset&#125; /&gt;
+&#125;
+
+if (importer.isComplete()) &#123;
+  return &lt;SuccessScreen /&gt;
+&#125;
+
+return &lt;Dropzone onFile=&#123;importer.loadFile&#125; /&gt;</code></pre>
+
+  <h2>Hooking into Events (onComplete, onError)</h2>
+  <p>
+    For side effects like analytics, notifications, or navigation, use callback
+    options instead of wiring custom effects across multiple UI states.
+  </p>
+
+  <pre><code>const importer = useCSVImporter(&#123;
+  schema,
+  autoMap: true,
+  autoMapThreshold: 0.85,
+
+  onComplete: (result) =&gt; &#123;
+    console.log(`Imported $&#123;result.stats.validRows&#125; valid rows`)
+  &#125;,
+
+  onError: (error) =&gt; &#123;
+    console.error(`Import failed: $&#123;error&#125;`)
+  &#125;,
+&#125;)</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/solid/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+    <a
+      href="/docs/solid/full"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white hover:bg-neutral-800 rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Full API
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

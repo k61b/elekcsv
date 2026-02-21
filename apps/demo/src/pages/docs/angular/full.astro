@@ -1,0 +1,87 @@
+---
+// src/pages/docs/angular/full.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Angular">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/angular
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">7.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    A complete look at configuration arguments and reactive return values exposed
+    by <code>CSVImporterService</code>.
+  </p>
+
+  <h2>Configuration Arguments</h2>
+  <p>
+    The service accepts the same schema/parser options as <code>@elekcsv/core</code>,
+    plus lifecycle callbacks.
+  </p>
+
+  <pre><code>type UseCSVImporterOptions = &#123;
+  schema: Schema
+  autoMap?: boolean
+  autoMapThreshold?: number
+  maxPreviewRows?: number
+  maxRows?: number
+  locale?: string
+  onComplete?: (result: ImportResult) =&gt; void
+  onError?: (error: string) =&gt; void
+  onStepChange?: (step: ImporterStep) =&gt; void
+  delimiter?: string
+  quote?: string
+&#125;</code></pre>
+
+  <h2>Service Return Values</h2>
+  <p>
+    Read signals in templates and call methods from event handlers or workflow actions.
+  </p>
+
+  <pre><code>class CSVImporterService &#123;
+  // Signals
+  step(): ImporterStep
+  isLoading(): boolean
+  isComplete(): boolean
+  hasErrors(): boolean
+  canGoBack(): boolean
+  canGoForward(): boolean
+
+  // Actions
+  loadFile(file: File): void
+  loadString(content: string, fileName?: string): void
+  updateMapping(csvIndex: number, schemaColumn: string | null): void
+  confirmMapping(): void
+  accept(): void
+  reset(): void
+  goBack(): void
+
+  // Validation accessors
+  getErrors(options?): ValidationError[]
+  getRowErrors(row: number): ValidationError[]
+  getCellError(row: number, col: number): ValidationError | null
+  getErrorSummary(): Record&lt;string, number&gt;
+
+  // Snapshot state
+  currentState: ImporterState
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/angular/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

@@ -1,0 +1,110 @@
+---
+// src/pages/docs/react/advanced.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Advanced Usage - React">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/react
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">2.3 Advanced Usage</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The true power of <code>useCSVImporter</code> lies in its reactive state machine.
+    Instead of imperatively turning loading spinners on and off, you react directly
+    to the machine's current state.
+  </p>
+
+  <h2>The Lifecycle State</h2>
+  <p>
+    The hook exposes internal boolean flags tracking the exact stage of the
+    user's import journey.
+  </p>
+
+  <pre><code>import &#123; useCSVImporter &#125; from '@elekcsv/react';
+
+export default function SmartUploader() &#123;
+  const &#123; 
+    importFile, 
+    isParsing, 
+    isError, 
+    isComplete, 
+    reset 
+  &#125; = useCSVImporter(&#123; /* schema config */ &#125;);
+
+  // Render different UI based on the state
+  if (isParsing) &#123;
+    return &lt;LoadingSpinner text="Reading millions of rows..." /&gt;;
+  &#125;
+
+  if (isError) &#123;
+    return (
+      &lt;div&gt;
+        &lt;h3&gt;Parsing Failed&lt;/h3&gt;
+        &lt;button onClick=&#123;reset&#125;&gt;Try Again&lt;/button&gt;
+      &lt;/div&gt;
+    );
+  &#125;
+  
+  if (isComplete) &#123;
+    return &lt;SuccessScreen /&gt;;
+  &#125;
+
+  return &lt;Dropzone onDrop=&#123;importFile&#125; /&gt;;
+&#125;</code></pre>
+
+  <h2>Hooking into Events (onComplete, onError)</h2>
+  <p>
+    If you need to trigger side-effects (like closing a modal or redirecting the
+    user) exactly when the import finishes, use the configuration hooks rather
+    than standard `useEffect` dependencies.
+  </p>
+
+  <pre><code>const &#123; importFile &#125; = useCSVImporter(&#123;
+  schema: &#123; /* ... */ &#125;,
+  
+  onComplete: (data, duration) =&gt; &#123;
+    console.log(`Successfully parsed $&#123;data.length&#125; rows in $&#123;duration&#125;ms`);
+    toast.success("Ready for review!");
+    router.push('/review-data');
+  &#125;,
+
+  onError: (errors) =&gt; &#123;
+    toast.error(`Found $&#123;errors.length&#125; bad rows. Processing halted.`);
+  &#125;
+&#125;);</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/react/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+    <a
+      href="/docs/react/full"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white hover:bg-neutral-800 rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Full API
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

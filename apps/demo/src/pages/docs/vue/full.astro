@@ -1,0 +1,75 @@
+---
+// src/pages/docs/vue/full.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Vue">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/vue
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">3.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    A complete look at the configuration arguments and the reactive return
+    values provided by the <code>useCSVImporter</code> composable.
+  </p>
+
+  <h2>Configuration Arguments</h2>
+  <p>
+    The composable accepts exactly the same parsing and schema options as
+    `@elekcsv/core`, plus Vue-specific callbacks.
+  </p>
+
+  <pre><code>import type &#123; ImporterResult, BaseRow, ErrorMap &#125; from '@elekcsv/core';
+
+type VueImporterConfig&lt;T&gt; = &#123;
+  // Standard Core Configuration
+  schema: SchemaConfig;
+
+  // Lifecycle Callbacks
+  onComplete?: (result: ImporterResult&lt;T&gt;) =&gt; void;
+  onError?: (error: Error) =&gt; void;
+&#125;</code></pre>
+
+  <h2>Composable Return Values</h2>
+  <p>
+    The destructuring output provides data reactive Refs, state objects, and the
+    trigger methods.
+  </p>
+
+  <pre><code>import type &#123; Ref &#125; from 'vue';
+
+type HookReturns&lt;T&gt; = &#123;
+  // Reactive Global State
+  state: ImporterState&lt;T&gt;; // contains &#123; mappedData, validation, step &#125;
+
+  // Reactive Flags
+  isLoading: Ref&lt;boolean&gt;;
+  hasErrors: Ref&lt;boolean&gt;;
+  isComplete: Ref&lt;boolean&gt;;
+  
+  // Triggers
+  loadFile: (file: File) =&gt; Promise&lt;void&gt;; // Call this from @change/@drop
+  reset: () =&gt; void;       // Clears all state and data to start over
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/vue/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

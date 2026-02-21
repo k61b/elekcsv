@@ -1,0 +1,99 @@
+---
+// src/pages/docs/core/advanced.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Advanced Usage - Core">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/core
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">1.3 Advanced Usage</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    When dealing with massive files, holding everything in memory is impossible.
+    `elekcsv` provides the `ImporterMachine` to manage large data streams
+    safely.
+  </p>
+
+  <h2>The State Machine Architecture</h2>
+  <p>
+    The `ImporterMachine` is robust. It manages file streams in chunks, executes
+    parser logic iteratively, and pauses processing automatically if
+    backpressure occurs (e.g., your database writes are slower than the file
+    read speed).
+  </p>
+
+  <pre><code>import &#123; createParser, ImporterMachine &#125; from '@elekcsv/core';
+
+const parser = createParser(&#123;
+  schema: &#123;
+    fields: [
+      &#123; key: 'sku', type: 'string', required: true &#125;,
+      &#123; key: 'price', type: 'number' &#125;
+    ]
+  &#125;
+&#125;);
+
+// Construct the pipeline
+const machine = new ImporterMachine(&#123;
+  parser,
+  batchSize: 5000,
+  
+  // This hook is called every time a batch of 5000 is ready.
+  // Returning a Promise here creates backpressure, pausing the
+  // internal stream until the database resolves the insertion.
+  onBatch: async (rows, context) =&gt; &#123;
+    await database.bulkInsert('products', rows);
+    console.log(`[Batch $&#123;context.batchIndex&#125;] Processed 5000 items.`);
+  &#125;,
+&#125;);
+
+// Start the import
+await machine.start(largeFileStream);</code></pre>
+
+  <h2>Bitmap Error Tracking</h2>
+  <p>
+    Parsing 10 million rows and saving 1 million error objects <code
+      >&#123;row: 45, error: "Missing SKU"&#125;</code
+    > will exhaust RAM very fast.
+  </p>
+  <p>
+    Instead, `elekcsv` relies on a highly compressed bitmap data structure to
+    track exactly which parsing constraints failed on which rows, using mere
+    kilobytes of memory for millions of rows.
+  </p>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/core/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+    <a
+      href="/docs/core/full"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white hover:bg-neutral-800 rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Full API
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

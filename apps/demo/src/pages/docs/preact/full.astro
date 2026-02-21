@@ -1,0 +1,86 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Preact">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/preact
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">5.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    <code>useCSVImporter</code> exposes importer configuration, state-machine
+    controls, and typed accessors for validation details.
+  </p>
+
+  <h2>Configuration Arguments</h2>
+
+  <pre><code>type UseCSVImporterOptions = &#123;
+  // Required
+  schema: Schema
+
+  // Behavior
+  autoMap?: boolean
+  autoMapThreshold?: number
+  maxPreviewRows?: number
+  maxRows?: number
+  locale?: string
+
+  // Callbacks
+  onComplete?: (result: ImportResult) =&gt; void
+  onError?: (error: string) =&gt; void
+  onStepChange?: (step: ImporterStep) =&gt; void
+
+  // Parser options
+  delimiter?: string
+  quote?: string
+&#125;</code></pre>
+
+  <h2>Hook Return Values</h2>
+
+  <pre><code>type UseCSVImporterReturn = &#123;
+  // State
+  state: ImporterState
+  step: ImporterStep
+
+  // Computed values
+  isLoading: boolean
+  isComplete: boolean
+  hasErrors: boolean
+  canGoBack: boolean
+  canGoForward: boolean
+
+  // Actions
+  loadFile: (file: File) =&gt; void
+  loadString: (content: string, fileName?: string) =&gt; void
+  updateMapping: (csvIndex: number, schemaColumn: string | null) =&gt; void
+  confirmMapping: () =&gt; void
+  accept: () =&gt; void
+  reset: () =&gt; void
+  goBack: () =&gt; void
+
+  // Validation accessors
+  getErrors: (options?: &#123; limit?: number; offset?: number &#125;) =&gt; ValidationError[]
+  getRowErrors: (row: number) =&gt; ValidationError[]
+  getCellError: (row: number, col: number) =&gt; ValidationError | null
+  getErrorSummary: () =&gt; Record&lt;string, number&gt;
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/preact/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

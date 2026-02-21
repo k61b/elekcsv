@@ -1,0 +1,121 @@
+---
+// src/pages/docs/vue/advanced.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Advanced Usage - Vue">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/vue
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">3.3 Advanced Usage</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The true power of <code>useCSVImporter</code> lies in its fully reactive state
+    machine. Instead of imperatively turning loading spinners on and off, you react
+    directly to the machine's current state using Vue's reactivity system.
+  </p>
+
+  <h2>The Lifecycle State</h2>
+  <p>
+    The composable exposes reactive boolean Refs tracking the exact stage of the
+    user's import journey, keeping your templates completely in sync
+    automatically.
+  </p>
+
+  <pre><code>&lt;script setup lang="ts"&gt;
+import &#123; useCSVImporter &#125; from '@elekcsv/vue';
+
+const &#123; 
+  loadFile, 
+  isLoading, 
+  hasErrors, 
+  isComplete,
+  reset 
+&#125; = useCSVImporter(&#123; /* schema config */ &#125;);
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;!-- Render different UI conditionally based on state Refs --&gt;
+  &lt;div v-if="isLoading"&gt;
+    &lt;LoadingSpinner text="Reading millions of rows..." /&gt;
+  &lt;/div&gt;
+
+  &lt;div v-else-if="hasErrors"&gt;
+    &lt;h3&gt;Parsing Failed&lt;/h3&gt;
+    &lt;button @click="reset"&gt;Try Again&lt;/button&gt;
+  &lt;/div&gt;
+  
+  &lt;div v-else-if="isComplete"&gt;
+    &lt;SuccessScreen /&gt;
+  &lt;/div&gt;
+
+  &lt;div v-else&gt;
+    &lt;Dropzone @drop="loadFile" /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;</code></pre>
+
+  <h2>Hooking into Events (onComplete, onError)</h2>
+  <p>
+    If you need to trigger side-effects (like closing a modal, triggering a
+    toast notification, or redirecting the user route) exactly when the import
+    finishes, use the configuration callbacks rather than standard Vue `watch`
+    dependencies to guarantee execution order.
+  </p>
+
+  <pre><code>&lt;script setup lang="ts"&gt;
+import &#123; useCSVImporter &#125; from '@elekcsv/vue';
+import &#123; useRouter &#125; from 'vue-router';
+import &#123; useToast &#125; from '@/components/ui/toast';
+
+const router = useRouter();
+const toast = useToast();
+
+const &#123; loadFile &#125; = useCSVImporter(&#123;
+  schema: &#123; /* ... */ &#125;,
+  
+  onComplete: (result) =&gt; &#123;
+    console.log(`Successfully parsed $&#123;result.stats.validRows&#125; rows in $&#123;result.stats.parseTime&#125;ms`);
+    toast.success("Ready for review!");
+    router.push('/review-data');
+  &#125;,
+
+  onError: (error) =&gt; &#123;
+    toast.error(`Fatal error: $&#123;error&#125;. Processing halted.`);
+  &#125;
+&#125;);
+&lt;/script&gt;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/vue/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+    <a
+      href="/docs/vue/full"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white hover:bg-neutral-800 rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Full API
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

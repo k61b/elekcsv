@@ -175,7 +175,7 @@ describe("LOAD_FILE action", () => {
 		expect(newState.error).toBeNull();
 	});
 
-	test("ignores action from other states", () => {
+	test("restarts parsing from mapping", () => {
 		const state: ImporterState = {
 			...createInitialState(),
 			step: "mapping",
@@ -184,8 +184,20 @@ describe("LOAD_FILE action", () => {
 
 		const newState = importerReducer(state, { type: "LOAD_FILE", file });
 
-		expect(newState.step).toBe("mapping");
-		expect(newState.file).toBeNull();
+		expect(newState.step).toBe("parsing");
+		expect(newState.file).toBe(file);
+	});
+
+	test("ignores action while parsing is in progress", () => {
+		const state: ImporterState = {
+			...createInitialState(),
+			step: "parsing",
+		};
+		const file = new File(["test"], "test.csv", { type: "text/csv" });
+
+		const newState = importerReducer(state, { type: "LOAD_FILE", file });
+
+		expect(newState.step).toBe("parsing");
 	});
 });
 
@@ -765,9 +777,12 @@ describe("isValidTransition", () => {
 		expect(isValidTransition("validating", "error")).toBe(true);
 		expect(isValidTransition("review", "complete")).toBe(true);
 		expect(isValidTransition("review", "mapping")).toBe(true);
+		expect(isValidTransition("review", "parsing")).toBe(true);
 		expect(isValidTransition("complete", "review")).toBe(true);
 		expect(isValidTransition("complete", "idle")).toBe(true);
+		expect(isValidTransition("complete", "parsing")).toBe(true);
 		expect(isValidTransition("error", "idle")).toBe(true);
+		expect(isValidTransition("error", "parsing")).toBe(true);
 	});
 
 	test("rejects invalid transitions", () => {
@@ -776,8 +791,7 @@ describe("isValidTransition", () => {
 		expect(isValidTransition("parsing", "complete")).toBe(false);
 		expect(isValidTransition("mapping", "review")).toBe(false);
 		expect(isValidTransition("validating", "mapping")).toBe(false);
-		expect(isValidTransition("review", "parsing")).toBe(false);
-		expect(isValidTransition("complete", "parsing")).toBe(false);
+		expect(isValidTransition("error", "complete")).toBe(false);
 	});
 });
 

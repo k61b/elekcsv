@@ -1,0 +1,81 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Svelte">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/svelte
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">3.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    <code>createCSVImporter</code> returns an object API plus a Svelte store. You
+    can use either style, or both together, depending on your component design.
+  </p>
+
+  <h2>Configuration Options</h2>
+  <pre><code>type UseCSVImporterOptions = &#123;
+  schema: Schema
+  autoMap?: boolean
+  autoMapThreshold?: number
+  maxPreviewRows?: number
+  maxRows?: number
+  locale?: string
+  delimiter?: string
+  quote?: string
+
+  onComplete?: (result: ImportResult) =&gt; void
+  onError?: (error: string) =&gt; void
+  onStepChange?: (step: ImporterStep) =&gt; void
+&#125;</code></pre>
+
+  <h2>Importer Object API</h2>
+  <pre><code>type CSVImporter = &#123;
+  // reactive state
+  store: Writable&lt;ImporterState&gt;
+  state: ImporterState
+  step: ImporterStep
+
+  // flags
+  isLoading: boolean
+  isComplete: boolean
+  hasErrors: boolean
+  canGoBack: boolean
+  canGoForward: boolean
+
+  // actions
+  loadFile(file: File): void
+  loadString(content: string, fileName?: string): void
+  updateMapping(csvIndex: number, schemaColumn: string | null): void
+  confirmMapping(): void
+  accept(): void
+  reset(): void
+  goBack(): void
+
+  // error inspection
+  getErrors(options?: &#123; limit?: number; offset?: number &#125;): ValidationError[]
+  getRowErrors(row: number): ValidationError[]
+  getCellError(row: number, col: number): ValidationError | null
+  getErrorSummary(): Record&lt;string, number&gt;
+
+  destroy(): void
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/svelte/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

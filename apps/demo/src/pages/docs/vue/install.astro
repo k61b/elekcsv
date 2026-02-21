@@ -1,0 +1,73 @@
+---
+// src/pages/docs/vue/install.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Vue">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/vue
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">3.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/vue</code> package provides a highly optimized <code
+      >useCSVImporter</code
+    > composable. It wraps the headless <code>@elekcsv/core</code> engine, bringing
+    zero-allocation parsing directly into your Vue 3 reactivity system.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    The package is designed to be UI-agnostic. We give you the state machine and
+    the parsing engine; you render the buttons and the dropzones.
+  </p>
+
+  <pre><code>npm install @elekcsv/vue @elekcsv/core
+# or
+yarn add @elekcsv/vue @elekcsv/core
+# or
+pnpm add @elekcsv/vue @elekcsv/core</code></pre>
+
+  <h2>Why the Vue Composable?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">No Main Thread Blocking:</strong> Large CSV files
+      are parsed asynchronously using web workers (or time-sliced chunks) under the
+      hood to ensure your Vue UI never freezes.
+    </li>
+    <li>
+      <strong class="text-black">Reactive State Machine:</strong> The composable
+      instantly provides reactive Refs like <code>isLoading</code>, <code
+        >isComplete</code
+      >, and <code>hasErrors</code> without you needing to manage custom <code
+        >ref</code
+      > jungles.
+    </li>
+    <li>
+      <strong class="text-black">Bring Your Own UI:</strong> Unlike other libraries
+      that force ugly, unstylable iframes or modals, `elekcsv` gives you raw data.
+      Render it with Tailwind, Vuetify, or plain CSS.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/vue/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

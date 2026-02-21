@@ -1,0 +1,21 @@
+id,first_name,last_name,email,age,city,signup_date,is_active
+1,Burak,Yılmaz,john.doe@example.com,28,New York,2023-01-15,true
+2,Hüseyin,Çakır,jane.smith@example.com,34,Los Angeles,2023-02-20,true
+3,Şenol,Güneş,mjohnson@example.com,41,Chicago,2023-03-05,false
+4,Bülent,Korkmaz,ewilliams88@example.com,25,Houston,2023-04-12,true
+5,Özer,Hurmacı,davidb@example.com,52,Phoenix,2023-05-18,false
+6,Emre,Belözoğlu,sarah.j@example.com,30,Philadelphia,2023-06-22,true
+7,Yatabare,Silva,rgarcia@example.com,45,San Antonio,2023-07-30,true
+8,Gökdeniz,Karadeniz,jmiller_test@example.com,29,San Diego,2023-08-04,false
+9,Marcelo,Filipe,wdavis99@example.com,38,Dallas,2023-09-11,true
+10,Onur,Kıvrak,ashley_rod@example.com,27,San Jose,2023-10-25,true
+11,Arda,Turan,cmartinez@example.com,43,Austin,2023-11-08,false
+12,Mustafa,Akbaş,amanda.h@example.com,31,Jacksonville,2023-12-14,true
+13,İbrahim,Yattara,jlopez@example.com,36,Fort Worth,2024-01-02,true
+14,Seyhan,Yıldız,bgonzalez@example.com,26,Columbus,2024-01-19,true
+15,Ahmet,Çalık,mwilson@example.com,40,San Francisco,2024-02-05,false
+16,Zeki,Yıldırım,megan.a@example.com,33,Charlotte,2024-02-28,true
+17,Cihan,Haspolatlı,athomas@example.com,48,Indianapolis,2024-03-10,true
+18,Mahmut,Akan,lauren.t@example.com,29,Seattle,2024-04-01,true
+19,Ceyhun,Çiriş,jmoore33@example.com,35,Denver,2024-04-15,false
+20,Soner,Gönül,kjackson@example.com,24,Washington,2024-05-02,true

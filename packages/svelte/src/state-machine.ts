@@ -31,7 +31,7 @@ export function createInitialState(): ImporterState {
 export function importerReducer(state: ImporterState, action: ImporterAction): ImporterState {
 	switch (action.type) {
 		case "LOAD_FILE": {
-			if (state.step !== "idle" && state.step !== "error") {
+			if (state.step === "parsing" || state.step === "validating") {
 				return state;
 			}
 			return {
@@ -44,7 +44,7 @@ export function importerReducer(state: ImporterState, action: ImporterAction): I
 		}
 
 		case "LOAD_STRING": {
-			if (state.step !== "idle" && state.step !== "error") {
+			if (state.step === "parsing" || state.step === "validating") {
 				return state;
 			}
 			return {
@@ -287,11 +287,11 @@ export function isValidTransition(from: ImporterStep, to: ImporterStep): boolean
 	const validTransitions: Record<ImporterStep, ImporterStep[]> = {
 		idle: ["parsing"],
 		parsing: ["mapping", "error"],
-		mapping: ["validating", "idle", "error"],
+		mapping: ["validating", "idle", "error", "parsing"],
 		validating: ["review", "error"],
-		review: ["complete", "mapping", "idle"],
-		complete: ["review", "idle"],
-		error: ["idle"],
+		review: ["complete", "mapping", "idle", "parsing"],
+		complete: ["review", "idle", "parsing"],
+		error: ["idle", "parsing"],
 	};
 
 	return validTransitions[from]?.includes(to) ?? false;

@@ -1,0 +1,21 @@
+id,first_name,last_name,email,age,city,signup_date,is_active
+1,Burak,Yılmaz,,28,New York,2023-01-15,true
+2,Hüseyin,Çakır,jane.smith@example.com,thirty-four,Los Angeles,2023-02-20,true
+3,Şenol,Güneş,mjohnson@example.com,-41,Chicago,2023-03-05,maybe
+4,Emily,Davis,emily.davis@example.com,22,,2023-04-10,true
+5,William,Brown,,55,Houston,not_a_date,false
+6,Sarah,Wilson,sarah.w@example.com,19,Phoenix,2023-06-30,true
+7,David,Martinez,dmartinez123@example,42,San Antonio,2023-07-12,true
+8,Emma,Anderson,emma.anderson@example.com,31,San Diego,2023-08-25,false
+9,James,Thomas,,not_a_number,Dallas,2023-09-05,true
+10,Olivia,Taylor,olivia.t@example.com,29,San Jose,2023-10-18,false
+11,Robert,Moore,robert.m@example.com,60,Austin,11/11/2023,true
+12,Sophia,Jackson,sophia.j@example.com,24,Jacksonville,2023-12-01,true
+13,Daniel,Martin,dmartin@example.com,38,Fort Worth,2024-01-15,false
+14,Isabella,Lee,isabella.l@example.com,,Columbus,2024-02-28,true
+15,Matthew,Perez,mperez@example.com,45,Charlotte,2024-03-10,yes
+16,Mia,Thompson,mia.thompson@example.com,27,Indianapolis,2024-04-22,true
+17,Joseph,White,jwhite@example.com,33,Seattle,2024-05-05,false
+18,Charlotte,Harris,,21,Denver,2024-06-18,true
+19,Anthony,Clark,aclark@example.com,52,Washington,2024-07-30,true
+20,Amelia,Lewis,amelia.l@example.com,26,Boston,2024-08-12,false

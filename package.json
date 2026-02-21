@@ -13,11 +13,22 @@
 	"bugs": {
 		"url": "https://github.com/k61b/elekcsv/issues"
 	},
-	"keywords": ["csv", "parser", "validator", "import", "locale", "typescript", "react"],
+	"keywords": [
+		"csv",
+		"parser",
+		"validator",
+		"import",
+		"locale",
+		"typescript",
+		"react"
+	],
 	"engines": {
 		"node": ">=18"
 	},
-	"workspaces": ["packages/*"],
+	"workspaces": [
+		"packages/*",
+		"apps/*"
+	],
 	"scripts": {
 		"build": "bun run --cwd packages/core build && bun run --cwd packages/react build && bun run --cwd packages/svelte build && bun run --cwd packages/vue build && bun run --cwd packages/solid build && bun run --cwd packages/preact build && bun run --cwd packages/angular build",
 		"dev": "bun run --cwd packages/core dev & bun run --cwd packages/react dev & bun run --cwd packages/svelte dev & bun run --cwd packages/vue dev & bun run --cwd packages/solid dev & bun run --cwd packages/preact dev & bun run --cwd packages/angular dev",

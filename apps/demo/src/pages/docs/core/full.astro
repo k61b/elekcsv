@@ -1,0 +1,83 @@
+---
+// src/pages/docs/core/full.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Full API - Core">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/core
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">1.4 Full API Reference</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The exhaustive configuration options for extreme parsing scenarios, strict
+    locale definitions, and internal AST debugging.
+  </p>
+
+  <h2>Configuration Object</h2>
+
+  <p>
+    The <code>createParser(&#123;'&#123; schema, options &#125;'&#125;)</code> function
+    takes two arguments. Below is the full signature of the configuration object.
+  </p>
+
+  <pre><code>type ParserOptions = &#123;
+  // Character Configurations
+  delimiter?: string | 'auto';    // Default: 'auto' (evaluates , ; \t | )
+  newline?: string | 'auto';      // Default: 'auto' (\n or \r\n)
+  quoteChar?: string;             // Default: '"'
+  escapeChar?: string;            // Default: '"'
+  
+  // Header Behavior
+  hasHeader?: boolean;            // Default: true
+  skipEmptyLines?: boolean;       // Default: true 
+  fuzzyMatch?: boolean;           // Turn on distance matching for columns.
+  
+  // Locales
+  locale?: string;                // e.g., 'tr-TR', affects number/date parsing
+  
+  // Internal (Advanced)
+  codegenInlineValidators?: boolean; // Inlines checks directly into generated string
+  debugAst?: boolean;                // Logs the AST before finalizing JIT compilation
+&#125;</code></pre>
+
+  <h2>Schema Field Configuration</h2>
+
+  <p>
+    The schema determines how string columns are cast and validated dynamically.
+  </p>
+
+  <pre><code>type FieldSchema = &#123;
+  key: string;              // The final object key in the output JSON.
+  type: 'string' | 'number' | 'date' | 'boolean';
+  required?: boolean;       // Drops row if empty
+  
+  // Normalization
+  trim?: boolean;           // Default: true
+  toLowerCase?: boolean;    
+  
+  // Custom Validation
+  validate?: (value: any) =&gt; boolean;
+  transform?: (value: any) =&gt; any;
+&#125;</code></pre>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/core/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+  </div>
+</Layout>

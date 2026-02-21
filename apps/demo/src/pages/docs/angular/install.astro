@@ -1,0 +1,66 @@
+---
+// src/pages/docs/angular/install.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Angular">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/angular
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">7.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/angular</code> package provides a highly optimized
+    <code>CSVImporterService</code>. It wraps the headless <code>@elekcsv/core</code>
+    engine, bringing zero-allocation parsing directly into Angular signal-driven
+    components.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    The package is designed to be UI-agnostic. You get the importer state machine and
+    parsing engine; your component renders templates, buttons, and review screens.
+  </p>
+
+  <pre><code>npm install @elekcsv/angular @elekcsv/core
+# or
+yarn add @elekcsv/angular @elekcsv/core
+# or
+pnpm add @elekcsv/angular @elekcsv/core</code></pre>
+
+  <h2>Why the Angular Service?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">Signal-Based State:</strong> Access values like
+      <code>step()</code>, <code>isLoading()</code>, and <code>hasErrors()</code>
+      directly in Angular templates.
+    </li>
+    <li>
+      <strong class="text-black">Non-Blocking Pipeline:</strong> CSV parsing and
+      validation run asynchronously to keep Angular views responsive.
+    </li>
+    <li>
+      <strong class="text-black">Framework-Aligned API:</strong> Service methods map
+      naturally to event handlers in standalone or NgModule components.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/angular/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

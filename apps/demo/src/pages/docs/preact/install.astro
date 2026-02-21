@@ -1,0 +1,67 @@
+---
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Preact">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/preact
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">5.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/preact</code> package provides the <code>useCSVImporter</code>
+    hook for lightweight, reactive CSV imports in Preact apps. It wraps
+    <code>@elekcsv/core</code> and exposes a step-based state machine plus helper
+    methods for mapping and validation.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    Install the Preact package with the core engine, then wire the hook into your
+    own uploader UI.
+  </p>
+
+  <pre><code>npm install @elekcsv/preact @elekcsv/core
+# or
+yarn add @elekcsv/preact @elekcsv/core
+# or
+pnpm add @elekcsv/preact @elekcsv/core</code></pre>
+
+  <h2>Why the Preact Hook?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">Small Runtime, Full Control:</strong> Keep bundle
+      size low with Preact while still using the full elekcsv parsing and
+      validation pipeline.
+    </li>
+    <li>
+      <strong class="text-black">Step-Based Flow:</strong> React to import stages
+      like <code>parsing</code>, <code>mapping</code>, <code>review</code>, and
+      <code>complete</code> without building your own wizard logic.
+    </li>
+    <li>
+      <strong class="text-black">Headless by Design:</strong> Bring your own dropzone,
+      table, and error UI while the hook handles mapping, validation, and state
+      transitions.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/preact/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

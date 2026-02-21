@@ -1,0 +1,66 @@
+---
+// src/pages/docs/solid/install.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Solid">
+  <div class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest">
+    @elekcsv/solid
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">6.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/solid</code> package provides a highly optimized
+    <code>useCSVImporter</code> primitive for SolidJS. It wraps the headless
+    <code>@elekcsv/core</code> engine and maps importer state directly to Solid
+    accessors.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    The package is fully UI-agnostic. You get the importer state machine and parsing
+    pipeline, then render your own dropzone, table, and review UI with Solid components.
+  </p>
+
+  <pre><code>npm install @elekcsv/solid @elekcsv/core
+# or
+yarn add @elekcsv/solid @elekcsv/core
+# or
+pnpm add @elekcsv/solid @elekcsv/core</code></pre>
+
+  <h2>Why the Solid Hook?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">Signal-Native Flow:</strong> Importer values like
+      <code>step()</code>, <code>isLoading()</code>, and <code>hasErrors()</code> plug
+      directly into Solid's fine-grained reactivity model.
+    </li>
+    <li>
+      <strong class="text-black">Non-Blocking Parsing:</strong> Large CSV files are
+      processed asynchronously to keep your UI responsive during parse and validation.
+    </li>
+    <li>
+      <strong class="text-black">Headless UI Freedom:</strong> Keep complete control
+      over the presentation layer while elekcsv handles schema mapping and validation.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/solid/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

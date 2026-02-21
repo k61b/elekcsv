@@ -1,0 +1,97 @@
+---
+// src/pages/docs/core/basic.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Basic Usage - Core">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/core
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">1.2 Basic Usage</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    While strictly headless, the core package provides an incredibly simple API
+    for when you just need to turn CSV text into strongly typed JSON arrays,
+    fast.
+  </p>
+
+  <h2>The `createParser` Method</h2>
+  <p>
+    Normally, you do not use the raw parser directly for large files. However,
+    for string data or simple backend scripts, the `parse()` method is
+    synchronous, completely blocking, and incredibly fast.
+  </p>
+
+  <pre><code>import &#123; createParser &#125; from '@elekcsv/core';
+
+// 1. Define your data model
+const schema = &#123;
+  fields: [
+    &#123; key: 'id',     type: 'number' &#125;,
+    &#123; key: 'email',  type: 'string', required: true &#125;,
+    &#123; key: 'name',   type: 'string' &#125;
+  ]
+&#125;;
+
+// 2. Generate the optimized parsing engine
+const parser = createParser(&#123; schema &#125;);
+
+// 3. Provide raw CSV text
+const csvData = `id,email,name\n1,john@doe.com,John\n2,jane@doe.com,Jane`;
+
+// 4. Parse
+const &#123; data, errors &#125; = parser.parse(csvData);
+
+console.log(data);
+// [
+//   &#123; id: 1, email: "john@doe.com", name: "John" &#125;,
+//   &#123; id: 2, email: "jane@doe.com", name: "Jane" &#125;
+// ]</code></pre>
+
+  <blockquote>
+    Important: Using `parser.parse()` places the entire dataset into memory. For
+    large files (e.g. 50MB+), consider using the `ImporterMachine` as shown in
+    Advanced Usage to process rows in batches.
+  </blockquote>
+
+  <h2>Validation and Types</h2>
+  <p>
+    Notice that mapping the <code>type</code> to <code>number</code> automatically
+    converts the numeric strings into primitive JavaScript Numbers. Invalid rows
+    are safely skipped and recorded within the <code>errors</code> collection.
+  </p>
+
+  <div class="mt-16 flex justify-between">
+    <a
+      href="/docs/core/install"
+      class="inline-flex items-center gap-2 px-6 py-3 border border-neutral-300 text-black hover:border-black rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      Previous
+    </a>
+    <a
+      href="/docs/core/advanced"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white hover:bg-neutral-800 rounded-md text-sm font-medium no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Advanced Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>

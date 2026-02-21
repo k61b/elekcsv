@@ -1,0 +1,71 @@
+---
+// src/pages/docs/core/install.astro
+import Layout from '../../../layouts/Layout.astro'
+---
+
+<Layout title="Install & Overview - Core">
+  <div
+    class="mb-4 text-sm font-mono text-neutral-500 uppercase tracking-widest"
+  >
+    @elekcsv/core
+  </div>
+
+  <h1 class="mb-8 border-b-2 border-black pb-4">1.1 Install & Overview</h1>
+
+  <p class="text-xl text-neutral-600 leading-relaxed mb-10">
+    The <code>@elekcsv/core</code> is the foundational parsing engine. It is strictly
+    headless, UI-agnostic, and relies on optimized, zero-allocation algorithms and
+    dynamic V8 code generation (JIT) rather than polymorphic loops.
+  </p>
+
+  <h2>Installation</h2>
+  <p>
+    The core package is ideal for Node.js backends, workers, or if you prefer to
+    build your own UI components from scratch.
+  </p>
+
+  <pre><code>npm install @elekcsv/core
+# or
+yarn add @elekcsv/core
+# or
+pnpm add @elekcsv/core</code></pre>
+
+  <h2>Why Core?</h2>
+
+  <ul>
+    <li>
+      <strong class="text-black">Dynamic Parsing Pipeline:</strong> Instead of generic
+      regex matching, `createParser` dynamically generates a Javascript function
+      unique to your specific schema.
+    </li>
+    <li>
+      <strong class="text-black">Zero-Allocation Data Structures:</strong> Reduces
+      garbage collection pauses during heavy multi-megabyte streams.
+    </li>
+    <li>
+      <strong class="text-black">Fuzzy Column Mapping:</strong> Handle "Email Address",
+      "email", and "E-mail" automatically with locale-aware distance algorithms.
+    </li>
+    <li>
+      <strong class="text-black">State Machine (`ImporterMachine`):</strong> Process
+      data in batches and manage stream lifecycle with an event-driven architecture.
+    </li>
+  </ul>
+
+  <div class="mt-16 flex justify-end">
+    <a
+      href="/docs/core/basic"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-md text-sm font-medium hover:bg-neutral-800 no-underline! transition-colors"
+      style="text-decoration:none;"
+    >
+      Next: Basic Usage
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+      </svg>
+    </a>
+  </div>
+</Layout>
