@@ -88,7 +88,12 @@ export default function ReactUploader() {
 
 					{isLoading ? (
 						<div className="text-black font-medium tracking-tight animate-pulse flex flex-col items-center">
-							<svg className="w-8 h-8 mb-4 animate-spin" fill="none" viewBox="0 0 24 24">
+							<svg
+								className="w-8 h-8 mb-4 animate-spin"
+								fill="none"
+								viewBox="0 0 24 24"
+								aria-hidden="true"
+							>
 								<circle
 									className="opacity-25"
 									cx="12"
@@ -96,12 +101,12 @@ export default function ReactUploader() {
 									r="10"
 									stroke="currentColor"
 									strokeWidth="4"
-								></circle>
+								/>
 								<path
 									className="opacity-75"
 									fill="currentColor"
 									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								></path>
+								/>
 							</svg>
 							Processing <strong>sample.csv</strong>...
 						</div>
@@ -110,13 +115,19 @@ export default function ReactUploader() {
 							<div
 								className={`p-4 rounded-full mb-4 transition-colors ${dragActive ? "bg-black text-white" : "bg-neutral-100 text-black"}`}
 							>
-								<svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									className="w-8 h-8"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
 										strokeWidth={1.5}
 										d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-									></path>
+									/>
 								</svg>
 							</div>
 							<h3 className="text-black font-semibold text-xl mb-2 mt-0 tracking-tight">
@@ -169,13 +180,19 @@ export default function ReactUploader() {
 								onClick={() => openPicker(reloadInputRef)}
 								className="h-full text-xs font-bold uppercase tracking-widest border-2 border-black px-4 hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
 							>
-								<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									className="w-3.5 h-3.5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										strokeLinecap="round"
 										strokeLinejoin="round"
 										strokeWidth={2}
 										d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-									></path>
+									/>
 								</svg>
 								Load New File
 							</button>

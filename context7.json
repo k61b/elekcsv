@@ -1,13 +1,13 @@
 {
 	"$schema": "https://context7.com/schema/context7.json",
 	"projectTitle": "elek - CSV Import Toolkit",
-	"description": "High-performance, headless, locale-aware CSV import toolkit for JavaScript/TypeScript. Parse, validate, map columns with fuzzy matching, locale-aware date/number/currency processing, compiled validators, and bitmap error tracking. Includes a headless React hook.",
+	"description": "High-performance, headless, locale-aware CSV import toolkit for JavaScript/TypeScript with parsing, fuzzy column mapping, validation, compiled validators, bitmap error tracking, and framework hooks.",
 	"folders": ["docs"],
 	"excludeFolders": ["node_modules", "dist", ".turbo", "coverage", ".changeset", "benchmarks"],
 	"excludeFiles": ["CHANGELOG.md", "LICENSE", "PARSER_ANALYSIS.md", "OPTIMIZATION_PLAN.md"],
 	"rules": [
 		"Always import from '@elekcsv/core' for parse/validate/map functions",
-		"Always import from '@elekcsv/react' for the useCSVImporter hook",
+		"For React apps, import useCSVImporter from '@elekcsv/react'; for other frameworks, use their matching package",
 		"Use parse() for CSV parsing - it returns { headers, rows, rowCount, fieldCount }",
 		"Define a schema with columns: Record<string, ColumnDef> before validation",
 		"Use mapColumns() for automatic header-to-schema matching with fuzzy support",

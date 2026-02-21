@@ -26,6 +26,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "dist", ".changeset"]
+		"ignore": ["node_modules", "dist", ".changeset", "**/.astro/**"]
 	}
 }

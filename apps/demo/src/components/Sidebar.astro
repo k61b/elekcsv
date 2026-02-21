@@ -1,73 +1,73 @@
 ---
 // src/components/Sidebar.astro
 
-const currentPath = Astro.url.pathname
+const currentPath = Astro.url.pathname;
 
 const navGroups = [
-  {
-    title: '1. Core (@elekcsv/core)',
-    items: [
-      { name: '1.1 Install & Overview', path: '/docs/core/install' },
-      { name: '1.2 Basic Usage', path: '/docs/core/basic' },
-      { name: '1.3 Advanced Usage', path: '/docs/core/advanced' },
-      { name: '1.4 Full API', path: '/docs/core/full' },
-    ],
-  },
-  {
-    title: '2. React (@elekcsv/react)',
-    items: [
-      { name: '2.1 Install & Overview', path: '/docs/react/install' },
-      { name: '2.2 Basic Usage', path: '/docs/react/basic' },
-      { name: '2.3 Advanced Usage', path: '/docs/react/advanced' },
-      { name: '2.4 Full API', path: '/docs/react/full' },
-    ],
-  },
-  {
-    title: '3. Vue (@elekcsv/vue)',
-    items: [
-      { name: '3.1 Install & Overview', path: '/docs/vue/install' },
-      { name: '3.2 Basic Usage', path: '/docs/vue/basic' },
-      { name: '3.3 Advanced Usage', path: '/docs/vue/advanced' },
-      { name: '3.4 Full API', path: '/docs/vue/full' },
-    ],
-  },
-  {
-    title: '4. Svelte (@elekcsv/svelte)',
-    items: [
-      { name: '4.1 Install & Overview', path: '/docs/svelte/install' },
-      { name: '4.2 Basic Usage', path: '/docs/svelte/basic' },
-      { name: '4.3 Advanced Usage', path: '/docs/svelte/advanced' },
-      { name: '4.4 Full API', path: '/docs/svelte/full' },
-    ],
-  },
-  {
-    title: '5. Preact (@elekcsv/preact)',
-    items: [
-      { name: '5.1 Install & Overview', path: '/docs/preact/install' },
-      { name: '5.2 Basic Usage', path: '/docs/preact/basic' },
-      { name: '5.3 Advanced Usage', path: '/docs/preact/advanced' },
-      { name: '5.4 Full API', path: '/docs/preact/full' },
-    ],
-  },
-  {
-    title: '6. Solid (@elekcsv/solid)',
-    items: [
-      { name: '6.1 Install & Overview', path: '/docs/solid/install' },
-      { name: '6.2 Basic Usage', path: '/docs/solid/basic' },
-      { name: '6.3 Advanced Usage', path: '/docs/solid/advanced' },
-      { name: '6.4 Full API', path: '/docs/solid/full' },
-    ],
-  },
-  {
-    title: '7. Angular (@elekcsv/angular)',
-    items: [
-      { name: '7.1 Install & Overview', path: '/docs/angular/install' },
-      { name: '7.2 Basic Usage', path: '/docs/angular/basic' },
-      { name: '7.3 Advanced Usage', path: '/docs/angular/advanced' },
-      { name: '7.4 Full API', path: '/docs/angular/full' },
-    ],
-  },
-]
+	{
+		title: "1. Core (@elekcsv/core)",
+		items: [
+			{ name: "1.1 Install & Overview", path: "/docs/core/install" },
+			{ name: "1.2 Basic Usage", path: "/docs/core/basic" },
+			{ name: "1.3 Advanced Usage", path: "/docs/core/advanced" },
+			{ name: "1.4 Full API", path: "/docs/core/full" },
+		],
+	},
+	{
+		title: "2. React (@elekcsv/react)",
+		items: [
+			{ name: "2.1 Install & Overview", path: "/docs/react/install" },
+			{ name: "2.2 Basic Usage", path: "/docs/react/basic" },
+			{ name: "2.3 Advanced Usage", path: "/docs/react/advanced" },
+			{ name: "2.4 Full API", path: "/docs/react/full" },
+		],
+	},
+	{
+		title: "3. Vue (@elekcsv/vue)",
+		items: [
+			{ name: "3.1 Install & Overview", path: "/docs/vue/install" },
+			{ name: "3.2 Basic Usage", path: "/docs/vue/basic" },
+			{ name: "3.3 Advanced Usage", path: "/docs/vue/advanced" },
+			{ name: "3.4 Full API", path: "/docs/vue/full" },
+		],
+	},
+	{
+		title: "4. Svelte (@elekcsv/svelte)",
+		items: [
+			{ name: "4.1 Install & Overview", path: "/docs/svelte/install" },
+			{ name: "4.2 Basic Usage", path: "/docs/svelte/basic" },
+			{ name: "4.3 Advanced Usage", path: "/docs/svelte/advanced" },
+			{ name: "4.4 Full API", path: "/docs/svelte/full" },
+		],
+	},
+	{
+		title: "5. Preact (@elekcsv/preact)",
+		items: [
+			{ name: "5.1 Install & Overview", path: "/docs/preact/install" },
+			{ name: "5.2 Basic Usage", path: "/docs/preact/basic" },
+			{ name: "5.3 Advanced Usage", path: "/docs/preact/advanced" },
+			{ name: "5.4 Full API", path: "/docs/preact/full" },
+		],
+	},
+	{
+		title: "6. Solid (@elekcsv/solid)",
+		items: [
+			{ name: "6.1 Install & Overview", path: "/docs/solid/install" },
+			{ name: "6.2 Basic Usage", path: "/docs/solid/basic" },
+			{ name: "6.3 Advanced Usage", path: "/docs/solid/advanced" },
+			{ name: "6.4 Full API", path: "/docs/solid/full" },
+		],
+	},
+	{
+		title: "7. Angular (@elekcsv/angular)",
+		items: [
+			{ name: "7.1 Install & Overview", path: "/docs/angular/install" },
+			{ name: "7.2 Basic Usage", path: "/docs/angular/basic" },
+			{ name: "7.3 Advanced Usage", path: "/docs/angular/advanced" },
+			{ name: "7.4 Full API", path: "/docs/angular/full" },
+		],
+	},
+];
 ---
 
 <aside

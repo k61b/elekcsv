@@ -95,7 +95,12 @@ export default function SolidUploader() {
 
 					{importer.isLoading() ? (
 						<div class="text-black font-medium tracking-tight animate-pulse flex flex-col items-center">
-							<svg class="w-8 h-8 mb-4 animate-spin" fill="none" viewBox="0 0 24 24">
+							<svg
+								class="w-8 h-8 mb-4 animate-spin"
+								fill="none"
+								viewBox="0 0 24 24"
+								aria-hidden="true"
+							>
 								<circle
 									class="opacity-25"
 									cx="12"
@@ -117,7 +122,13 @@ export default function SolidUploader() {
 							<div
 								class={`p-4 rounded-full mb-4 transition-colors ${dragActive() ? "bg-black text-white" : "bg-neutral-100 text-black"}`}
 							>
-								<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									class="w-8 h-8"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -179,7 +190,13 @@ export default function SolidUploader() {
 								type="button"
 								class="h-full text-xs font-bold uppercase tracking-widest border-2 border-black px-4 hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
 							>
-								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg
+									class="w-3.5 h-3.5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"

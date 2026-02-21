@@ -1,14 +1,14 @@
 ---
 // src/layouts/Layout.astro
-import '../styles/global.css'
-import Sidebar from '../components/Sidebar.astro'
+import "../styles/global.css";
+import Sidebar from "../components/Sidebar.astro";
 
 interface Props {
-  title: string
-  description?: string
+	title: string;
+	description?: string;
 }
 
-const { title, description = 'elekcsv Documentation' } = Astro.props
+const { title, description = "elekcsv Documentation" } = Astro.props;
 ---
 
 <!DOCTYPE html>
